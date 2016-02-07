@@ -64,11 +64,8 @@ def reset():
 @task
 def copy(plugin_dir):
     run("mkdir -p " + plugin_dir + "/Contents/Code")
-    run("mkdir -p " + plugin_dir + "/Contents/Services/Shared\ Code")
 
     run("cp -R ../Contents/Code/*.py " + plugin_dir + "/Contents/Code")
-    # run("cp -R src/lib/common/*.py " + plugin_dir + "/Contents/Code")
-    # run("cp -R src/lib/plex_plugin/Contents " + plugin_dir)
 
     print("Files were copied.")
 
@@ -107,11 +104,6 @@ def reset_remote(password):
         sudo -S rm -rf {plex_home}/Plug-in\ Support/Data/com.plexapp.plugins.{plugin_name}
         sudo -S rm -rf {plex_home}/Plug-in\ Support/Preferences/com.plexapp.plugins.{plugin_name}.xml
         sudo -S rm -rf {plex_home}/Plug-ins\{bundle_name}/Contents/Code
-        # sudo -S rm -rf {plex_home}/Plug-ins\{bundle_name}/Contents/Resources
-        # sudo -S rm -rf {plex_home}/Plug-ins\{bundle_name}/Contents/Services
-        # sudo -S rm -rf {plex_home}/Plug-ins\{bundle_name}/Contents/Strings
-        # sudo -S rm -f {plex_home}/Plug-ins\{bundle_name}/Contents/DefaultPrefs.json
-        # sudo -S rm -f {plex_home}/Plug-ins\{bundle_name}/Contents/Info.plist
 
         echo "Plugin was reset.".
     """.format(plex_home=unix_plex_home, plugin_dir=unix_plugin_dir, bundle_name=bundle_name, plugin_name=plugin_name)

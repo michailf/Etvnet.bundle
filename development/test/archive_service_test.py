@@ -157,7 +157,7 @@ class EtvnetServiceTest(unittest.TestCase):
 
         bitrate = bitrates[format][0]
 
-        url_data = self.service.get_url(media_object['id'], bitrate=bitrate, format=format, other_server=True)
+        url_data = self.service.get_url(media_object['id'], bitrate=bitrate, format=format)
 
         self.print_url_data(url_data, bitrates)
 

@@ -1,5 +1,6 @@
 import json
 import time
+
 from config import Config
 
 class PlexConfig(Config):
