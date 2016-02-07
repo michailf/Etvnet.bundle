@@ -1,0 +1,36 @@
+# Links
+
+https://github.com/TroRg/plex.kino.pub
+
+https://github.com/plex-unofficial/ETVnet.bundle
+
+https://github.com/serge-v/ctv
+
+# Install
+
+
+pip install lxml
+pip install requests
+
+# Linux on flash
+
+1.
+
+hdiutil convert -format UDRW -o ~/Downloads/ubuntu-15.10-desktop-amd64 ~/Downloads/ubuntu-15.10-desktop-amd64.iso
+
+2.
+
+diskutil list
+
+# /dev/disk3
+
+3.
+
+diskutil eject /dev/disk3
+diskutil unmountDisk /dev/disk3
+
+4.
+
+sudo dd if=/Users/ashvets/Downloads/ubuntu-15.10-desktop-amd64.dmg of=/dev/rdisk3 bs=1m
+
+

@@ -60,3 +60,9 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+.idea
+tmp
+etvnet.config
+youtube.config
+build
