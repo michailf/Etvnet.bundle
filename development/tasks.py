@@ -65,7 +65,7 @@ def reset():
 def copy(plugin_dir):
     run("mkdir -p " + plugin_dir + "/Contents/Code")
 
-    run("cp -R ../Contents/Code/*.py " + plugin_dir + "/Contents/Code")
+    run("cp -R ../Contents/* " + plugin_dir + "/Contents")
 
     print("Files were copied.")
 
