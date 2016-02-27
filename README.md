@@ -11,7 +11,9 @@
 - on Ubuntu:
 
 ```bash
-sudo dpkg -i /home/alex/Downloads/plexmediaserver_0.9.14.6.1620-e0b7243_amd64.deb
+sudo dpkg -i plexmediaserver_0.9.14.6.1620-e0b7243_amd64.deb
+
+sudo service plexmediaserer restart
 ```
 
 - on OSX:
@@ -27,6 +29,17 @@ Plugins for PMS are located here (<plugins_home>):
 
 - Ubuntu: /var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Plug-ins
 - OSX:  ~/Library/Application\ Support/Plex\ Media\ Server/Plug-ins
+
+Logs are located here:
+
+- Ubuntu:
+
+/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Logs/PMS\ Plugin\ Logs/com.plexapp.plugins.etvnet.log
+/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Logs/Plex\ Media\ Server.log
+
+OSX:
+~/Library/Logs/PMS\ Plugin\ Logs/com.plexapp.plugins.etvnet.log
+~/Library/Logs/Plex\ Media\ Server.log
 
 # Installing core tools
 
@@ -92,17 +105,6 @@ This command will also restarts plex server.
 env USERNAME=user HOSTNAME=remote_host invoke rdeploy
 ```
 
-# Logs
-
-- Ubuntu:
-
-/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Logs/PMS\ Plugin\ Logs/com.plexapp.plugins.etvnet.log
-/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Logs/Plex\ Media\ Server.log
-
-OSX:
-~/Library/Logs/PMS\ Plugin\ Logs/com.plexapp.plugins.etvnet.log
-~/Library/Logs/Plex\ Media\ Server.log
-
 # Plugin Location
 
 - Ubuntu:
@@ -121,6 +123,7 @@ OSX:
 * https://github.com/kolsys/VKontakte.bundle.git
 * https://github.com/kolsys/HDSerials.bundle
 * https://github.com/solvek/VsetvNet.bundle.git
+* https://github.com/TehCrucible/G2Gfm.bundle.git
 * https://github.com/dagalufh/WebTools.bundle.git
 * https://github.com/kolsys/plex-channel-updater
 

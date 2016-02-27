@@ -14,12 +14,19 @@ def GetArchiveMenu():
     result = video_service.get_genres()
 
     for genre in result['data']:
+        if genre['id'] == 207: # blockbusters
+            continue
+
         key = Callback(HandleGenre, id=genre['id'], name=genre['name'])
         title = genre['name']
 
         oc.add(DirectoryObject(key=key, title=title))
 
-    oc.add(InputDirectoryObject(key=Callback(SearchMovies), title=unicode(L("Movies Search")), thumb=R(SEARCH_ICON)))
+    oc.add(InputDirectoryObject(
+        key = Callback(SearchMovies),
+        title = unicode(L("Movies Search")),
+        prompt = unicode(L('Search on Etvnet')),
+        thumb = R(SEARCH_ICON)))
 
     return oc
 
@@ -32,7 +39,7 @@ def SearchMovies(query=None, page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=SearchMovies, query=query)
+    pagination.append_controls(oc, response, page=page, callback=SearchMovies, query=query, params=params)
 
     if len(oc) < 1:
         return common.no_contents('Movies Search')
@@ -60,7 +67,7 @@ def HandleTopic(id, page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, callback=HandleTopic, id=id, page=page)
+    pagination.append_controls(oc, response, callback=HandleTopic, id=id, page=page, params=params)
 
     return oc
 
@@ -71,6 +78,9 @@ def GetChannels():
     response = video_service.get_channels()
 
     for channel in response['data']:
+        if channel['id'] == 158: # cool movies
+            continue
+
         key = Callback(HandleChannel, id=channel['id'], name=channel['name'])
         title = unicode(channel['name'])
 
@@ -87,7 +97,7 @@ def HandleChannel(id, name, page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=HandleChannel, id=id, name=name)
+    pagination.append_controls(oc, response, page=page, callback=HandleChannel, id=id, name=name, params=params)
 
     return oc
 
@@ -100,7 +110,35 @@ def HandleGenre(id, name, page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=HandleGenre, id=id, name=name)
+    pagination.append_controls(oc, response, page=page, callback=HandleGenre, id=id, name=name, params=params)
+
+    return oc
+
+@route('/video/etvnet/blockbusters')
+def GetBlockbusters(page=1, **params):
+    oc = ObjectContainer(title2=unicode(L('Blockbusters')))
+
+    response = video_service.get_blockbusters(per_page=common.get_elements_per_page(), page=page)
+
+    for media in HandleMediaList(response['data']['media']):
+        oc.add(media)
+
+    pagination.append_controls(oc, response, page=page, callback=GetBlockbusters, params=params)
+
+    return oc
+
+@route('/video/etvnet/cool_movies')
+def GetCoolMovies(page=1, **params):
+    oc = ObjectContainer(title2=unicode(L('Cool Movies')))
+
+    response = video_service.get_archive(channel_id=158, per_page=common.get_elements_per_page(), page=page, params=params)
+    #
+    # response = video_service.get_cool_movies(per_page=common.get_elements_per_page(), page=page, params=params)
+
+    for media in HandleMediaList(response['data']['media']):
+        oc.add(media)
+
+    pagination.append_controls(oc, response, page=page, callback=GetCoolMovies, params=params)
 
     return oc
 
@@ -126,7 +164,7 @@ def GetHistory(page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=GetHistory)
+    pagination.append_controls(oc, response, page=page, callback=GetHistory, params=params)
 
     return oc
 
@@ -190,7 +228,7 @@ def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
 def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index, files, container=False):
     oc = ObjectContainer(title2=unicode(name))
 
-    oc.add(GetVideoObject(id, 'movie', name, thumb, rating_key, description, duration, year, on_air, index, files, container))
+    oc.add(GetVideoObject(id, 'movie', name, thumb, rating_key, description, duration, year, on_air, index, files))
 
     if str(container) == 'False':
         bookmarks.append_controls(oc, id=id, name=name, thumb=thumb, rating_key=rating_key,
@@ -198,7 +236,7 @@ def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air
 
     return oc
 
-def GetVideoObject(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files, container):
+def GetVideoObject(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
     video = build_metadata_object(media_type=media_type, name=name, year=year, index=index)
 
     video.rating_key = rating_key
@@ -269,7 +307,7 @@ def originally_available_at(on_air):
 
 @indirect
 @route('/video/etvnet/play_video')
-def PlayVideo(id, bitrate, format, **params):
+def PlayVideo(id, bitrate, format):
     response = video_service.get_url(media_id=id, format=format, bitrate=bitrate, other_server=common.other_server())
 
     url = response['url']

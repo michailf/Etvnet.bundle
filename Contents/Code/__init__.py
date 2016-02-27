@@ -65,6 +65,8 @@ def MainMenu(complete=False, offline=False):
 
     oc.add(DirectoryObject(key=Callback(live.GetLiveChannelsMenu), title=unicode(L('Live'))))
     oc.add(DirectoryObject(key=Callback(archive.GetArchiveMenu), title=unicode(L('Archive'))))
+    oc.add(DirectoryObject(key=Callback(archive.GetBlockbusters), title=unicode(L('Blockbusters'))))
+    oc.add(DirectoryObject(key=Callback(archive.GetCoolMovies), title=unicode(L('Cool Movies'))))
     oc.add(DirectoryObject(key=Callback(archive.GetNewArrivals), title=unicode(L('New Arrivals'))))
     oc.add(DirectoryObject(key=Callback(archive.GetTopicsMenu), title=unicode(L('Topics'))))
     oc.add(DirectoryObject(key=Callback(bookmarks.GetBookmarks), title=unicode(L('Bookmarks'))))
@@ -89,7 +91,7 @@ def Authorization():
     return video_service.authorization(on_authorization_success=OnAuthorizationSuccess,
                                  on_authorization_failure=OnAuthorizationFailure)
 
-def OnAuthorizationSuccess(user_code, device_code, activation_url):
+def OnAuthorizationSuccess(user_code, activation_url):
     oc = ObjectContainer(
         # view_group='details',
         no_cache=True,

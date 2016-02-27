@@ -2,12 +2,15 @@
   // top
   "Live": "Прямой эфир",
   "Archive": "Архив",
+  "Blockbusters": "Блокбастеры",
+  "Cool Movies": "Интересное Кино",
   "New Arrivals": "Новое",
   "Topics": "Темы",
   "Bookmarks": "Очередь",
   "History": "История",
   "Radio": "Радио",
   "System": "Система",
+  "Search on Etvnet": "Искать на Etvnet",
 
   // live
   "All Channels": "Все каналы",

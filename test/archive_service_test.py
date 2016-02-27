@@ -8,7 +8,7 @@ from config import Config
 
 class EtvnetServiceTest(unittest.TestCase):
     def setUp(self):
-        config = Config("../etvnet.config")
+        config = Config("etvnet.config")
 
         self.service = EtvnetService(config)
 

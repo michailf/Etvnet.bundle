@@ -1,8 +1,10 @@
-from invoke import run, task
-import platform
 import getpass
-import ssh_client
 import os
+import platform
+
+from invoke import run, task
+
+import ssh_client
 
 if 'USERNAME' in os.environ:
     username = os.environ['USERNAME']
@@ -65,7 +67,7 @@ def reset():
 def copy(plugin_dir):
     run("mkdir -p " + plugin_dir + "/Contents/Code")
 
-    run("cp -R ../Contents/* " + plugin_dir + "/Contents")
+    run("cp -R Contents/* " + plugin_dir + "/Contents")
 
     print("Files were copied.")
 
