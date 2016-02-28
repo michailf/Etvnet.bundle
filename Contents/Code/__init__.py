@@ -91,7 +91,7 @@ def Authorization():
     return video_service.authorization(on_authorization_success=OnAuthorizationSuccess,
                                  on_authorization_failure=OnAuthorizationFailure)
 
-def OnAuthorizationSuccess(user_code, activation_url):
+def OnAuthorizationSuccess(user_code, _, activation_url):
     oc = ObjectContainer(
         # view_group='details',
         no_cache=True,

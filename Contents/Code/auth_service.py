@@ -6,7 +6,7 @@ try:
 except:
     from urllib.parse import urljoin
 
-from common.http_service import HttpService
+from http_service import HttpService
 
 class AuthService(HttpService):
     def __init__(self, auth_url, client_id, client_secret, grant_type, scope):

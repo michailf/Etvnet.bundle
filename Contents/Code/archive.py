@@ -245,6 +245,7 @@ def append_sorting_controls(oc, handler, **params):
             thumb="thumb"
     ))
 
+
 def GetVideoObject(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
     video = build_metadata_object(media_type=media_type, name=name, year=year, index=index)
 

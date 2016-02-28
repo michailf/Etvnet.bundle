@@ -3,7 +3,7 @@
 import time
 from datetime import date
 
-from common.api_service import ApiService
+from api_service import ApiService
 
 class EtvnetService(ApiService):
     PER_PAGE = 15
