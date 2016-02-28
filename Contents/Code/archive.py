@@ -131,9 +131,7 @@ def GetBlockbusters(page=1, **params):
 def GetCoolMovies(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Cool Movies')))
 
-    response = video_service.get_archive(channel_id=158, per_page=common.get_elements_per_page(), page=page, params=params)
-    #
-    # response = video_service.get_cool_movies(per_page=common.get_elements_per_page(), page=page, params=params)
+    response = video_service.get_cool_movies(per_page=common.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)

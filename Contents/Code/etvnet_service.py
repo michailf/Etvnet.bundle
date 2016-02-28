@@ -232,6 +232,9 @@ class EtvnetService(ApiService):
 
         return self.get_archive(genre=genre, per_page=per_page, page=page)
 
+    def get_cool_movies(self, per_page=PER_PAGE, page=1):
+        return self.get_archive(channel_id=158, per_page=per_page, page=page)
+
     def search(self, query, per_page=PER_PAGE, page=1, dir=None):
         if not dir:
             dir = 'desc'
