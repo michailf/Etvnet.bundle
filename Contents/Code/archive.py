@@ -2,7 +2,6 @@ import json
 import common
 import pagination
 import bookmarks
-import sorting
 import urllib
 
 @route('/video/etvnet/archive_menu')
@@ -215,7 +214,7 @@ def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
         oc.add(media)
 
     bookmarks.append_controls(oc, id=id, name=name, thumb=thumb)
-    sorting.append_controls(oc, HandleChildren, id=id, name=name, thumb=thumb, in_queue=in_queue, page=page, dir=dir)
+    append_sorting_controls(oc, HandleChildren, id=id, name=name, thumb=thumb, in_queue=in_queue, page=page, dir=dir)
 
     pagination.append_controls(oc, response, callback=HandleChildren, id=id, name=name, thumb=thumb,
                                in_queue=in_queue, page=page, dir=dir)
@@ -233,6 +232,18 @@ def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air
             description=description, duration=duration, year=year, on_air=on_air, files=files, container=container)
 
     return oc
+
+def append_sorting_controls(oc, handler, **params):
+    if params['dir'] == 'asc':
+        params['dir'] = 'desc'
+    else:
+        params['dir'] = 'asc'
+
+    oc.add(DirectoryObject(
+            key=Callback(handler, **params),
+            title=unicode(L('Sort Items')),
+            thumb="thumb"
+    ))
 
 def GetVideoObject(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
     video = build_metadata_object(media_type=media_type, name=name, year=year, index=index)
