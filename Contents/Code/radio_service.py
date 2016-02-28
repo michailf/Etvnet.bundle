@@ -2,7 +2,7 @@
 
 import json
 
-from http_service import HttpService
+from common.http_service import HttpService
 
 class RadioService(HttpService):
     RADIO_URL = "http://radio.etvnet.com/station"

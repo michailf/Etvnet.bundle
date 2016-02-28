@@ -1,7 +1,7 @@
 import json
 import time
 
-from config import Config
+from common.config import Config
 
 class PlexConfig(Config):
     def load(self):
