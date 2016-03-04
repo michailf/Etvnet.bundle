@@ -61,7 +61,7 @@ def GetTopicsMenu():
 def HandleTopic(id, page=1, **params):
     oc = ObjectContainer(title2=unicode(L(id)))
 
-    response = video_service.get_topic_items(id, page=page)
+    response = video_service.get_topic_items(id, page=page, per_page=util.get_elements_per_page())
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
