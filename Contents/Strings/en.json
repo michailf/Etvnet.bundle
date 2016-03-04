@@ -7,7 +7,6 @@
   "Cool Movies": "Cool Movies",
   "Topics": "Topics",
   "Bookmarks": "Bookmarks",
-  "History": "History",
   "Radio": "Radio",
   "System": "System",
   "Search on Etvnet": "Search on Etvnet",
@@ -31,6 +30,7 @@
   "Movies Search": "Movies Search",
 
   // system
+  "History": "History",
   "Reset Token": "Reset Token",
   "Authorize": "Authorize",
   "Complete authorization": "Complete authorization",

@@ -124,6 +124,7 @@ env USERNAME=user HOSTNAME=remote_host invoke rdeploy
 * https://github.com/kolsys/HDSerials.bundle
 * https://github.com/solvek/VsetvNet.bundle.git
 * https://github.com/TehCrucible/G2Gfm.bundle.git
+* https://github.com/jwsolve/View47.bundle.git
 * https://github.com/dagalufh/WebTools.bundle.git
 * https://github.com/kolsys/plex-channel-updater
 

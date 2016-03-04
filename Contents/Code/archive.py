@@ -1,5 +1,5 @@
 import json
-import common
+import util
 import pagination
 import bookmarks
 import urllib
@@ -31,7 +31,7 @@ def GetArchiveMenu():
 
 @route('/video/etvnet/search_movies')
 def SearchMovies(query=None, page=1, **params):
-    response = video_service.search(query=query, per_page=common.get_elements_per_page(), page=page)
+    response = video_service.search(query=query, per_page=util.get_elements_per_page(), page=page)
 
     oc = ObjectContainer(title2=unicode(L('Movies Search')))
 
@@ -41,7 +41,7 @@ def SearchMovies(query=None, page=1, **params):
     pagination.append_controls(oc, response, page=page, callback=SearchMovies, query=query, params=params)
 
     if len(oc) < 1:
-        return common.no_contents('Movies Search')
+        return util.no_contents('Movies Search')
 
     return oc
 
@@ -91,7 +91,7 @@ def GetChannels():
 def HandleChannel(id, name, page=1, **params):
     oc = ObjectContainer(title2=unicode(name))
 
-    response = video_service.get_archive(channel_id=id, per_page=common.get_elements_per_page(), page=page)
+    response = video_service.get_archive(channel_id=id, per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -104,7 +104,7 @@ def HandleChannel(id, name, page=1, **params):
 def HandleGenre(id, name, page=1, **params):
     oc = ObjectContainer(title2=unicode(name))
 
-    response = video_service.get_archive(genre=int(id), per_page=common.get_elements_per_page(), page=page)
+    response = video_service.get_archive(genre=int(id), per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -117,7 +117,7 @@ def HandleGenre(id, name, page=1, **params):
 def GetBlockbusters(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Blockbusters')))
 
-    response = video_service.get_blockbusters(per_page=common.get_elements_per_page(), page=page)
+    response = video_service.get_blockbusters(per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -130,7 +130,7 @@ def GetBlockbusters(page=1, **params):
 def GetCoolMovies(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Cool Movies')))
 
-    response = video_service.get_cool_movies(per_page=common.get_elements_per_page(), page=page)
+    response = video_service.get_cool_movies(per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -143,7 +143,7 @@ def GetCoolMovies(page=1, **params):
 def GetNewArrivals(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('New Arrivals')))
 
-    response = video_service.get_new_arrivals(per_page=common.get_elements_per_page(), page=page)
+    response = video_service.get_new_arrivals(per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -156,7 +156,7 @@ def GetNewArrivals(page=1, **params):
 def GetHistory(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('History')))
 
-    response = video_service.get_history(per_page=common.get_elements_per_page(), page=page)
+    response = video_service.get_history(per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -208,7 +208,7 @@ def HandleMediaList(response, in_queue=False):
 def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
     oc = ObjectContainer(title2=unicode(name))
 
-    response = video_service.get_children(int(id), per_page=common.get_elements_per_page(), page=page, dir=dir)
+    response = video_service.get_children(int(id), per_page=util.get_elements_per_page(), page=page, dir=dir)
 
     for media in HandleMediaList(response['data']['children'], in_queue=in_queue):
         oc.add(media)
@@ -221,7 +221,7 @@ def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
 
     return oc
 
-@route('/video/etvnet/child')
+@route('/video/etvnet/child', container=bool)
 def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index, files, container=False):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -263,7 +263,7 @@ def GetVideoObject(id, media_type, name, thumb, rating_key, description, duratio
 
     video.items = []
 
-    for format, bitrates in video_service.bitrates(files, common.get_format(), common.get_quality_level()).iteritems():
+    for format, bitrates in video_service.bitrates(files, util.get_format(), util.get_quality_level()).iteritems():
         video.items.extend(MediaObjectsForURL(id=id, format=str(format), bitrates=json.dumps(bitrates)))
 
     return video
@@ -272,8 +272,7 @@ def build_metadata_object(media_type, name, year, index=None):
     if media_type == 'episode':
         video = EpisodeObject(show=name, index=int(index))
     elif media_type == 'movie':
-        #video = MovieObject(title=name, year=int(year))
-        video = VideoClipObject(title=name, year=int(year))
+        video = MovieObject(title=name, year=int(year))
     else:
         video = VideoClipObject(title=name, year=int(year))
 
@@ -285,7 +284,8 @@ def MediaObjectsForURL(id, format, bitrates):
     for bitrate in sorted(json.loads(bitrates), reverse=True):
         media_object = MediaObject(
             protocol = Protocol.HLS,
-            container=Container.MP4,
+            container=Container.MPEGTS,
+            video_resolution=720,
             optimized_for_streaming=True
         )
 
@@ -318,12 +318,12 @@ def originally_available_at(on_air):
 @indirect
 @route('/video/etvnet/play_video')
 def PlayVideo(id, bitrate, format):
-    response = video_service.get_url(media_id=id, format=format, bitrate=bitrate, other_server=common.other_server())
+    response = video_service.get_url(media_id=id, format=format, bitrate=bitrate, other_server=util.other_server())
 
     url = response['url']
 
     if not url:
-        common.no_contents()
+        util.no_contents()
     else:
         return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
 

@@ -1,5 +1,3 @@
-from datetime import date
-
 def get_language():
     return Prefs['language'].split('/')[1]
 

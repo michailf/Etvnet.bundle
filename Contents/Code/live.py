@@ -2,7 +2,7 @@ import json
 import datetime
 import urllib
 
-import common
+import util
 import pagination
 import archive
 
@@ -36,7 +36,7 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
     response = video_service.get_live_channels(favorite_only=favorite_only, category=category)
 
     for index, media in enumerate(response['data']):
-        if index >= (page - 1) * common.get_elements_per_page() and index < page * common.get_elements_per_page():
+        if index >= (page - 1) * util.get_elements_per_page() and index < page * util.get_elements_per_page():
             id = media['id']
             name = media['name']
             thumb = media['icon']
@@ -74,13 +74,13 @@ def GetVideoObject(name, channel_id, thumb, files, container):
         thumb=Resource.ContentsOfURLWithFallback(url=thumb)
     )
 
-    offset = video_service.get_offset(common.get_time_shift())
+    offset = video_service.get_offset(util.get_time_shift())
 
     format ='mp4'
 
     new_files = json.loads(urllib.unquote_plus(files))
 
-    bitrates = video_service.bitrates(new_files, accepted_format=format, quality_level=common.get_quality_level())
+    bitrates = video_service.bitrates(new_files, accepted_format=format, quality_level=util.get_quality_level())
 
     video.key = Callback(GetLiveChannel, name=name, channel_id=channel_id, thumb=thumb, files=files, container=True)
     video.items = MediaObjectsForURL(channel_id=channel_id, format=format, offset=offset, bitrates=json.dumps(bitrates[format]))
@@ -162,12 +162,12 @@ def MediaObjectsForURL(channel_id, format, offset, bitrates):
 @route('/video/etvnet/play_hls')
 def PlayHLS(channel_id, bitrate, format, offset, **params):
     response = video_service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
-                               offset=offset, other_server=common.other_server())
+                                     offset=offset, other_server=util.other_server())
 
     Log(response['url'])
 
     if not response['url']:
-        #common.no_contents()
+        #util.no_contents()
         raise Ex.MediaNotAvailable
     else:
         return IndirectResponse(VideoClipObject, key=HTTPLiveStreamURL(response['url']))
@@ -198,7 +198,7 @@ def add_schedule(oc, channel_id, default_time, list):
 
     channel = find_channel(int(channel_id), channels)
 
-    offset = video_service.get_offset(common.get_time_shift())
+    offset = video_service.get_offset(util.get_time_shift())
     time_delta = datetime.timedelta(hours=offset)
 
     files = channel['files']
@@ -318,7 +318,7 @@ def HandleRemoveFavoriteChannel(**params):
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Favorite Removed')))
 
 def add_pagination_to_response(response, page):
-    pages = len(response['data'])/common.get_elements_per_page()
+    pages = len(response['data']) / util.get_elements_per_page()
 
     response['data'] = {'pagination': {
         'page': page,

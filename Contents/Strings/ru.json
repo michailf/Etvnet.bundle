@@ -7,7 +7,6 @@
   "New Arrivals": "Новое",
   "Topics": "Темы",
   "Bookmarks": "Очередь",
-  "History": "История",
   "Radio": "Радио",
   "System": "Система",
   "Search on Etvnet": "Искать на Etvnet",
@@ -31,6 +30,7 @@
   "Movies Search": "Поиск по Фильмам",
 
   // system
+  "History": "История",
   "Reset Token": "Сбросить Токен",
   "Authorize": "Авторизация",
   "Complete authorization": "Завершить авторизацию",
