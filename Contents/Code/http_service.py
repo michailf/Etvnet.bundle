@@ -1,5 +1,4 @@
 import urllib
-import sys
 
 try:
     from urllib2 import Request, urlopen
