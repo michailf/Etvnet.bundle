@@ -134,8 +134,9 @@ class ApiService(AuthService):
 
             response = self.api_request(self.api_url, access_path, method, data, *a, **k)
 
-            if len(response) > 0:
-                response = json.loads(response)
+            # if len(response) > 0:
+            #     response = json.loads(response)
+            response = json.loads(response.read())
         except HTTPError as e:
             if e.code == 401 and not unauthorized:
                 #or e.code == 400:

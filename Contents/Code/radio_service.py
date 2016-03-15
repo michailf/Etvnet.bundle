@@ -28,5 +28,5 @@ class RadioService(HttpService):
 
         url = self.RADIO_URL + "/" + str(id)
 
-        return json.loads(self.http_request(url, headers=headers))
+        return json.loads(self.http_request(url, headers=headers).read())
 

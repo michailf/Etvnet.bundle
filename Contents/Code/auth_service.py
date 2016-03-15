@@ -24,7 +24,7 @@ class AuthService(HttpService):
 
         response = self.auth_request(data, 'device/code')
 
-        result = json.loads(response)
+        result = json.loads(response.read())
 
         result['activation_url'] = self.auth_url + 'device/usercode'
 
@@ -35,14 +35,14 @@ class AuthService(HttpService):
 
         response = self.auth_request(data)
 
-        return self.add_expires(json.loads(response))
+        return self.add_expires(json.loads(response.read()))
 
     def update_token(self, refresh_token):
         data = {'grant_type': 'refresh_token', 'refresh_token': refresh_token}
 
         response = self.auth_request(data)
 
-        return self.add_expires(json.loads(response))
+        return self.add_expires(json.loads(response.read()))
 
     def auth_request(self, data, rtype='token', method=None):
         data['client_id'] = self.client_id

@@ -31,30 +31,12 @@ class HttpService():
             for key, value in headers.items():
                 request.add_header(key, value)
 
-        response = urlopen(request).read()
-
-        if sys.version_info.major == 3:
-            response = response.decode('utf-8')
-
-        return response
-
-    def http_request2(self, url, headers=None, data=None, method=None):
-        if data is not None:
-            data = urllib.urlencode(data)
-            request = Request(url, data)
-        else:
-            request = Request(url)
-
-        if method is not None:
-            request.get_method = lambda: method
-
-        if headers:
-            for key, value in headers.items():
-                request.add_header(key, value)
-
-        response = urlopen(request)
-
+        # response = urlopen(request).read()
+        #
         # if sys.version_info.major == 3:
         #     response = response.decode('utf-8')
+        #
+        # return response
 
-        return [response.read(), response]
+        return urlopen(request)
+
