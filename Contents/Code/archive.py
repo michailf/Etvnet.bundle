@@ -1,10 +1,12 @@
 import json
-import util
-import pagination
-import bookmarks
 import urllib
 
-@route('/video/etvnet/archive_menu')
+import util
+import common
+import pagination
+import bookmarks
+
+@route(common.PREFIX + '/archive_menu')
 def GetArchiveMenu():
     oc = ObjectContainer(title2=unicode(L('Archive')))
 
@@ -29,7 +31,7 @@ def GetArchiveMenu():
 
     return oc
 
-@route('/video/etvnet/search_movies')
+@route(common.PREFIX + '/search_movies')
 def SearchMovies(query=None, page=1, **params):
     response = video_service.search(query=query, per_page=util.get_elements_per_page(), page=page)
 
@@ -45,7 +47,7 @@ def SearchMovies(query=None, page=1, **params):
 
     return oc
 
-@route('/video/etvnet/topics_menu')
+@route(common.PREFIX + '/topics_menu')
 def GetTopicsMenu():
     oc = ObjectContainer(title2=unicode(L('Topics')))
 
@@ -57,7 +59,7 @@ def GetTopicsMenu():
 
     return oc
 
-@route('/video/etvnet/topic')
+@route(common.PREFIX + '/topic')
 def HandleTopic(id, page=1, **params):
     oc = ObjectContainer(title2=unicode(L(id)))
 
@@ -70,7 +72,7 @@ def HandleTopic(id, page=1, **params):
 
     return oc
 
-@route('/video/etvnet/channels')
+@route(common.PREFIX + '/channels')
 def GetChannels():
     oc = ObjectContainer(title2=unicode(L('Channels')))
 
@@ -87,7 +89,7 @@ def GetChannels():
 
     return oc
 
-@route('/video/etvnet/channel')
+@route(common.PREFIX + '/channel')
 def HandleChannel(id, name, page=1, **params):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -100,7 +102,7 @@ def HandleChannel(id, name, page=1, **params):
 
     return oc
 
-@route('/video/etvnet/genre')
+@route(common.PREFIX + '/genre')
 def HandleGenre(id, name, page=1, **params):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -113,7 +115,7 @@ def HandleGenre(id, name, page=1, **params):
 
     return oc
 
-@route('/video/etvnet/blockbusters')
+@route(common.PREFIX + '/blockbusters')
 def GetBlockbusters(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Blockbusters')))
 
@@ -126,7 +128,7 @@ def GetBlockbusters(page=1, **params):
 
     return oc
 
-@route('/video/etvnet/cool_movies')
+@route(common.PREFIX + '/cool_movies')
 def GetCoolMovies(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Cool Movies')))
 
@@ -139,7 +141,7 @@ def GetCoolMovies(page=1, **params):
 
     return oc
 
-@route('/video/etvnet/new_arrivals')
+@route(common.PREFIX + '/new_arrivals')
 def GetNewArrivals(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('New Arrivals')))
 
@@ -152,7 +154,7 @@ def GetNewArrivals(page=1, **params):
 
     return oc
 
-@route('/video/etvnet/history')
+@route(common.PREFIX + '/history')
 def GetHistory(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('History')))
 
@@ -204,7 +206,7 @@ def HandleMediaList(response, in_queue=False):
 
     return list
 
-@route('/video/etvnet/children')
+@route(common.PREFIX + '/children')
 def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -221,7 +223,7 @@ def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
 
     return oc
 
-@route('/video/etvnet/child', container=bool)
+@route(common.PREFIX + '/child', container=bool)
 def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index, files, container=False):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -244,7 +246,6 @@ def append_sorting_controls(oc, handler, **params):
             title=unicode(L('Sort Items')),
             thumb="thumb"
     ))
-
 
 def GetVideoObject(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
     video = build_metadata_object(media_type=media_type, name=name, year=year, index=index)
@@ -316,7 +317,7 @@ def originally_available_at(on_air):
     return Datetime.ParseDate(on_air.replace('+', ' ')).date()
 
 @indirect
-@route('/video/etvnet/play_video')
+@route(common.PREFIX + '/play_video')
 def PlayVideo(id, bitrate, format):
     response = video_service.get_url(media_id=id, format=format, bitrate=bitrate, other_server=util.other_server())
 

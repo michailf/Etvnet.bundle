@@ -1,4 +1,6 @@
-@route('/video/etvnet/radio_menu')
+import common
+
+@route(common.PREFIX + '/radio_menu')
 def GetRadioMenu():
     oc = ObjectContainer(title2=unicode(L('Radio')))
 
@@ -15,7 +17,7 @@ def GetRadioMenu():
 
     return oc
 
-@route('/video/etvnet/radio')
+@route(common.PREFIX + '/radio')
 def HandleRadio(id):
     response = radio_service.get_station(id=id)
 
@@ -35,7 +37,7 @@ def HandleRadio(id):
 
     return oc
 
-@route('/video/etvnet/track')
+@route(common.PREFIX + '/track')
 def GetTrack(id, title, track_title, format, bitrates, url, container=False):
     track = MetadataObjectForURL(id, title, track_title, format, bitrates, url, container)
 
@@ -92,6 +94,6 @@ def MediaObjectsForURL(format, bitrates, url):
 
     return media_objects
 
-@route('/video/etvnet/play_audio')
+@route(common.PREFIX + '/play_audio')
 def PlayRadio(url):
     return Redirect(url)

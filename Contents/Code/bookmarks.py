@@ -1,3 +1,4 @@
+import common
 import archive
 
 def append_controls(oc, **params):
@@ -16,19 +17,19 @@ def append_controls(oc, **params):
                 thumb=R(ADD_ICON)
         ))
 
-@route('/video/etvnet/add_bookmark')
+@route(common.PREFIX + '/add_bookmark')
 def HandleAddBookmark(**params):
     video_service.add_bookmark(params['id'])
 
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Bookmark Added')))
 
-@route('/video/etvnet/remove_bookmark')
+@route(common.PREFIX + '/remove_bookmark')
 def HandleRemoveBookmark(**params):
     video_service.remove_bookmark(params['id'])
 
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Bookmark Removed')))
 
-@route('/video/etvnet/bookmarks')
+@route(common.PREFIX + '/bookmarks')
 def GetBookmarks():
     oc = ObjectContainer(title2=unicode(L('Bookmarks')))
 

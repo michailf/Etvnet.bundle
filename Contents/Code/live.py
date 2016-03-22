@@ -3,10 +3,11 @@ import datetime
 import urllib
 
 import util
+import common
 import pagination
 import archive
 
-@route('/video/etvnet/live_channels_menu')
+@route(common.PREFIX + '/live_channels_menu')
 def GetLiveChannelsMenu():
     oc = ObjectContainer(title2=unicode(L('Live')))
 
@@ -27,7 +28,7 @@ def GetLiveChannelsMenu():
 
     return oc
 
-@route('/video/etvnet/live_channels')
+@route(common.PREFIX + '/live_channels')
 def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
     page = int(page)
 
@@ -54,7 +55,7 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
 
     return oc
 
-@route('/video/etvnet/live_channel')
+@route(common.PREFIX + '/live_channel')
 def GetLiveChannel(name, channel_id, thumb, files, container=False):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -159,7 +160,7 @@ def MediaObjectsForURL(channel_id, format, offset, bitrates):
     return media_objects
 
 @indirect
-@route('/video/etvnet/play_hls')
+@route(common.PREFIX + '/play_hls')
 def PlayHLS(channel_id, bitrate, format, offset, **params):
     response = video_service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
                                      offset=offset, other_server=util.other_server())
@@ -172,7 +173,7 @@ def PlayHLS(channel_id, bitrate, format, offset, **params):
     else:
         return IndirectResponse(VideoClipObject, key=HTTPLiveStreamURL(response['url']))
 
-@route('/video/etvnet/schedule')
+@route(common.PREFIX + '/schedule')
 def GetSchedule(channel_id):
     oc = ObjectContainer(title2=unicode(L('Schedule')))
 
@@ -305,13 +306,13 @@ def find_channel(id, favorite_channels):
 
     return found
 
-@route('/video/etvnet/add_favorite_channel')
+@route(common.PREFIX + '/add_favorite_channel')
 def HandleAddFavoriteChannel(**params):
     video_service.add_favorite_channel(params['id'])
 
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Favorite Added')))
 
-@route('/video/etvnet/remove_favorite_channel')
+@route(common.PREFIX + '/remove_favorite_channel')
 def HandleRemoveFavoriteChannel(**params):
     video_service.remove_favorite_channel(params['id'])
 
