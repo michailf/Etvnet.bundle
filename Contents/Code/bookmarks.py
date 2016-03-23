@@ -2,7 +2,7 @@ import common
 import archive
 
 def append_controls(oc, **params):
-    bookmark = video_service.get_bookmark(params['id'])
+    bookmark = service.get_bookmark(params['id'])
 
     if bookmark:
         oc.add(DirectoryObject(
@@ -19,13 +19,13 @@ def append_controls(oc, **params):
 
 @route(common.PREFIX + '/add_bookmark')
 def HandleAddBookmark(**params):
-    video_service.add_bookmark(params['id'])
+    service.add_bookmark(params['id'])
 
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Bookmark Added')))
 
 @route(common.PREFIX + '/remove_bookmark')
 def HandleRemoveBookmark(**params):
-    video_service.remove_bookmark(params['id'])
+    service.remove_bookmark(params['id'])
 
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Bookmark Removed')))
 
@@ -33,7 +33,7 @@ def HandleRemoveBookmark(**params):
 def GetBookmarks():
     oc = ObjectContainer(title2=unicode(L('Bookmarks')))
 
-    response = video_service.get_bookmarks()
+    response = service.get_bookmarks()
 
     for media in archive.HandleMediaList(response['data']['bookmarks']):
         oc.add(media)

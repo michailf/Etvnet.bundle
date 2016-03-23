@@ -15,7 +15,7 @@ def GetLiveChannelsMenu():
     oc.add(DirectoryObject(key=Callback(GetLiveChannels, title=L('Favorite'), favorite_only=True),
                            title=unicode(L('Favorite'))))
 
-    result = video_service.get_live_categories()
+    result = service.get_live_categories()
 
     for genre in result['data']:
         name = genre['name']
@@ -34,7 +34,7 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
 
     oc = ObjectContainer(title2=unicode(title))
 
-    response = video_service.get_live_channels(favorite_only=favorite_only, category=category)
+    response = service.get_live_channels(favorite_only=favorite_only, category=category)
 
     for index, media in enumerate(response['data']):
         if index >= (page - 1) * util.get_elements_per_page() and index < page * util.get_elements_per_page():
@@ -75,13 +75,13 @@ def GetVideoObject(name, channel_id, thumb, files, container):
         thumb=Resource.ContentsOfURLWithFallback(url=thumb)
     )
 
-    offset = video_service.get_offset(util.get_time_shift())
+    offset = service.get_offset(util.get_time_shift())
 
     format ='mp4'
 
     new_files = json.loads(urllib.unquote_plus(files))
 
-    bitrates = video_service.bitrates(new_files, accepted_format=format, quality_level=util.get_quality_level())
+    bitrates = service.bitrates(new_files, accepted_format=format, quality_level=util.get_quality_level())
 
     video.key = Callback(GetLiveChannel, name=name, channel_id=channel_id, thumb=thumb, files=files, container=True)
     video.items = MediaObjectsForURL(channel_id=channel_id, format=format, offset=offset, bitrates=json.dumps(bitrates[format]))
@@ -162,16 +162,24 @@ def MediaObjectsForURL(channel_id, format, offset, bitrates):
 @indirect
 @route(common.PREFIX + '/play_hls')
 def PlayHLS(channel_id, bitrate, format, offset, **params):
-    response = video_service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
+    response = service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
                                      offset=offset, other_server=util.other_server())
 
-    Log(response['url'])
+    #Log(response['url'])
 
-    if not response['url']:
-        #util.no_contents()
-        raise Ex.MediaNotAvailable
+
+    url = response['url']
+
+    if not url:
+        util.no_contents()
     else:
-        return IndirectResponse(VideoClipObject, key=HTTPLiveStreamURL(response['url']))
+        new_url = Callback(Playlist, url=url)
+
+        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(new_url))
+
+@route(common.PREFIX + '/Playlist.m3u8')
+def Playlist(url):
+    return service.get_play_list(url)
 
 @route(common.PREFIX + '/schedule')
 def GetSchedule(channel_id):
@@ -184,9 +192,9 @@ def GetSchedule(channel_id):
     yesterday = today - datetime.timedelta(days=1)
     tomorrow = today + datetime.timedelta(days=1)
 
-    yesterday_result = video_service.get_live_schedule(live_channel_id=channel_id, date=yesterday)
-    today_result = video_service.get_live_schedule(live_channel_id=channel_id, date=today)
-    tomorrow_result = video_service.get_live_schedule(live_channel_id=channel_id, date=tomorrow)
+    yesterday_result = service.get_live_schedule(live_channel_id=channel_id, date=yesterday)
+    today_result = service.get_live_schedule(live_channel_id=channel_id, date=today)
+    tomorrow_result = service.get_live_schedule(live_channel_id=channel_id, date=tomorrow)
 
     add_schedule(oc, channel_id, default_time, yesterday_result['data'])
     add_schedule(oc, channel_id, default_time, today_result['data'])
@@ -195,11 +203,11 @@ def GetSchedule(channel_id):
     return oc
 
 def add_schedule(oc, channel_id, default_time, list):
-    channels = video_service.get_live_channels()['data']
+    channels = service.get_live_channels()['data']
 
     channel = find_channel(int(channel_id), channels)
 
-    offset = video_service.get_offset(util.get_time_shift())
+    offset = service.get_offset(util.get_time_shift())
     time_delta = datetime.timedelta(hours=offset)
 
     files = channel['files']
@@ -279,7 +287,7 @@ def get_moscow_time():
     return time + datetime.timedelta(hours=3)
 
 def append_controls(oc, **params):
-    favorite_channels = video_service.get_live_channels(favorite_only=True)['data']
+    favorite_channels = service.get_live_channels(favorite_only=True)['data']
 
     favorite_channel = find_channel(int(params['id']), favorite_channels)
 
@@ -308,13 +316,13 @@ def find_channel(id, favorite_channels):
 
 @route(common.PREFIX + '/add_favorite_channel')
 def HandleAddFavoriteChannel(**params):
-    video_service.add_favorite_channel(params['id'])
+    service.add_favorite_channel(params['id'])
 
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Favorite Added')))
 
 @route(common.PREFIX + '/remove_favorite_channel')
 def HandleRemoveFavoriteChannel(**params):
-    video_service.remove_favorite_channel(params['id'])
+    service.remove_favorite_channel(params['id'])
 
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Favorite Removed')))
 

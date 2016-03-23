@@ -12,7 +12,7 @@ def GetArchiveMenu():
 
     oc.add(DirectoryObject(key=Callback(GetChannels), title=unicode(L('Channels'))))
 
-    result = video_service.get_genres()
+    result = service.get_genres()
 
     for genre in result['data']:
         if genre['id'] == 207: # blockbusters
@@ -33,7 +33,7 @@ def GetArchiveMenu():
 
 @route(common.PREFIX + '/search_movies')
 def SearchMovies(query=None, page=1, **params):
-    response = video_service.search(query=query, per_page=util.get_elements_per_page(), page=page)
+    response = service.search(query=query, per_page=util.get_elements_per_page(), page=page)
 
     oc = ObjectContainer(title2=unicode(L('Movies Search')))
 
@@ -51,7 +51,7 @@ def SearchMovies(query=None, page=1, **params):
 def GetTopicsMenu():
     oc = ObjectContainer(title2=unicode(L('Topics')))
 
-    for topic in video_service.TOPICS:
+    for topic in service.TOPICS:
         oc.add(DirectoryObject(
             key=Callback(HandleTopic, id=topic),
             title=unicode(L(topic))
@@ -63,7 +63,7 @@ def GetTopicsMenu():
 def HandleTopic(id, page=1, **params):
     oc = ObjectContainer(title2=unicode(L(id)))
 
-    response = video_service.get_topic_items(id, page=page, per_page=util.get_elements_per_page())
+    response = service.get_topic_items(id, page=page, per_page=util.get_elements_per_page())
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -76,7 +76,7 @@ def HandleTopic(id, page=1, **params):
 def GetChannels():
     oc = ObjectContainer(title2=unicode(L('Channels')))
 
-    response = video_service.get_channels()
+    response = service.get_channels()
 
     for channel in response['data']:
         if channel['id'] == 158: # cool movies
@@ -93,7 +93,7 @@ def GetChannels():
 def HandleChannel(id, name, page=1, **params):
     oc = ObjectContainer(title2=unicode(name))
 
-    response = video_service.get_archive(channel_id=id, per_page=util.get_elements_per_page(), page=page)
+    response = service.get_archive(channel_id=id, per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -106,7 +106,7 @@ def HandleChannel(id, name, page=1, **params):
 def HandleGenre(id, name, page=1, **params):
     oc = ObjectContainer(title2=unicode(name))
 
-    response = video_service.get_archive(genre=int(id), per_page=util.get_elements_per_page(), page=page)
+    response = service.get_archive(genre=int(id), per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -119,7 +119,7 @@ def HandleGenre(id, name, page=1, **params):
 def GetBlockbusters(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Blockbusters')))
 
-    response = video_service.get_blockbusters(per_page=util.get_elements_per_page(), page=page)
+    response = service.get_blockbusters(per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -132,7 +132,7 @@ def GetBlockbusters(page=1, **params):
 def GetCoolMovies(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Cool Movies')))
 
-    response = video_service.get_cool_movies(per_page=util.get_elements_per_page(), page=page)
+    response = service.get_cool_movies(per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -145,7 +145,7 @@ def GetCoolMovies(page=1, **params):
 def GetNewArrivals(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('New Arrivals')))
 
-    response = video_service.get_new_arrivals(per_page=util.get_elements_per_page(), page=page)
+    response = service.get_new_arrivals(per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -158,7 +158,7 @@ def GetNewArrivals(page=1, **params):
 def GetHistory(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('History')))
 
-    response = video_service.get_history(per_page=util.get_elements_per_page(), page=page)
+    response = service.get_history(per_page=util.get_elements_per_page(), page=page)
 
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
@@ -210,7 +210,7 @@ def HandleMediaList(response, in_queue=False):
 def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
     oc = ObjectContainer(title2=unicode(name))
 
-    response = video_service.get_children(int(id), per_page=util.get_elements_per_page(), page=page, dir=dir)
+    response = service.get_children(int(id), per_page=util.get_elements_per_page(), page=page, dir=dir)
 
     for media in HandleMediaList(response['data']['children'], in_queue=in_queue):
         oc.add(media)
@@ -224,7 +224,7 @@ def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
     return oc
 
 @route(common.PREFIX + '/child', container=bool)
-def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index, files, container=False):
+def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index, files, container=False, **params):
     oc = ObjectContainer(title2=unicode(name))
 
     oc.add(GetVideoObject(id, 'movie', name, thumb, rating_key, description, duration, year, on_air, index, files))
@@ -264,7 +264,7 @@ def GetVideoObject(id, media_type, name, thumb, rating_key, description, duratio
 
     video.items = []
 
-    for format, bitrates in video_service.bitrates(files, util.get_format(), util.get_quality_level()).iteritems():
+    for format, bitrates in service.bitrates(files, util.get_format(), util.get_quality_level()).iteritems():
         video.items.extend(MediaObjectsForURL(id=id, format=str(format), bitrates=json.dumps(bitrates)))
 
     return video
@@ -284,20 +284,20 @@ def MediaObjectsForURL(id, format, bitrates):
 
     for bitrate in sorted(json.loads(bitrates), reverse=True):
         media_object = MediaObject(
-            protocol = Protocol.HLS,
-            container=Container.MPEGTS,
-            video_resolution=720,
+            # protocol = Protocol.HLS,
+            # container=Container.MPEGTS,
+            # video_resolution=720,
             optimized_for_streaming=True
         )
 
         audio_stream = AudioStreamObject(
-            codec=AudioCodec.AAC,
-            channels=2,
-            bitrate=str(bitrate)
+            # codec=AudioCodec.AAC,
+            channels=2
+            # bitrate=str(bitrate)
         )
 
         video_stream = VideoStreamObject(
-            codec=VideoCodec.H264
+            # codec=VideoCodec.H264
         )
 
         key = Callback(PlayVideo, id=id, format=format, bitrate=str(bitrate))
@@ -319,12 +319,17 @@ def originally_available_at(on_air):
 @indirect
 @route(common.PREFIX + '/play_video')
 def PlayVideo(id, bitrate, format):
-    response = video_service.get_url(media_id=id, format=format, bitrate=bitrate, other_server=util.other_server())
+    response = service.get_url(media_id=id, format=format, bitrate=bitrate, other_server=util.other_server())
 
     url = response['url']
 
     if not url:
         util.no_contents()
     else:
-        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
+        new_url = Callback(Playlist, url=url)
 
+        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(new_url))
+
+@route(common.PREFIX + '/Playlist.m3u8')
+def Playlist(url):
+    return service.get_play_list(url)
