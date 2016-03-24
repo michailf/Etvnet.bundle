@@ -6,6 +6,7 @@ import util
 import common
 import pagination
 import archive
+import flow_builder
 
 @route(common.PREFIX + '/live_channels_menu')
 def GetLiveChannelsMenu():
@@ -59,7 +60,7 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
 def GetLiveChannel(name, channel_id, thumb, files, container=False):
     oc = ObjectContainer(title2=unicode(name))
 
-    oc.add(GetVideoObject(name, channel_id, thumb, files, container))
+    oc.add(GetVideoObject(name, channel_id, thumb, files))
 
     if not container:
         oc.add(DirectoryObject(key=Callback(GetSchedule, channel_id=channel_id), title=unicode(L('Schedule'))))
@@ -68,7 +69,7 @@ def GetLiveChannel(name, channel_id, thumb, files, container=False):
 
     return oc
 
-def GetVideoObject(name, channel_id, thumb, files, container):
+def GetVideoObject(name, channel_id, thumb, files):
     video = MovieObject(
         rating_key='rating_key',
         title=unicode(name),
@@ -84,90 +85,25 @@ def GetVideoObject(name, channel_id, thumb, files, container):
     bitrates = service.bitrates(new_files, accepted_format=format, quality_level=util.get_quality_level())
 
     video.key = Callback(GetLiveChannel, name=name, channel_id=channel_id, thumb=thumb, files=files, container=True)
-    video.items = MediaObjectsForURL(channel_id=channel_id, format=format, offset=offset, bitrates=json.dumps(bitrates[format]))
 
-    return video
-
-# RAW_HLS_CLIENTS = ['Android', 'iOS', 'Roku', 'Safari', 'tvOS']
-
-def MediaObjectsForURL(channel_id, format, offset, bitrates):
     media_objects = []
 
-    for bitrate in sorted(json.loads(bitrates), reverse=True):
-        # if Client.Product == 'Plex Web':
-        #     media_object =  MediaObject(
-        #         protocol='hls',
-        #         container = 'mpegts',
-        #         optimized_for_streaming = False
-        #     )
-        #
-        #     audio_stream = AudioStreamObject(
-        #         codec = AudioCodec.AAC,
-        #         channels = 2,
-        #         bitrate=str(bitrate)
-        #     )
-        #
-        #     video_stream = VideoStreamObject(
-        #         codec=VideoCodec.H264
-        #     )
-        #
-        #     key = Callback(PlayIndirectHLS, channel_id=channel_id, bitrate=str(bitrate), format=format, offset=offset)
-        #
-        #     part_object = PartObject(
-        #         key=key,
-        #         streams = [audio_stream, video_stream]
-        #     )
-        # elif Client.Platform in ['iOS', 'Safari', 'tvOS']:
-        #     media_object = MediaObject(
-        #         video_resolution = 720,
-        #         video_frame_rate = 50,
-        #         audio_channels = 2,
-        #         optimized_for_streaming = True
-        #     )
-        #
-        #     key = Callback(PlayIndirectHLS, channel_id=channel_id, bitrate=str(bitrate), format=format, offset=offset)
-        #
-        #     part_object = PartObject(key=key)
-        # else:
+    for bitrate in sorted(bitrates[format], reverse=True):
+        play_callback = Callback(PlayHLS, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
 
-        media_object = MediaObject(
-            protocol = Protocol.HLS,
-            container = Container.MPEGTS,
-            optimized_for_streaming=True
-        )
-
-        audio_stream = AudioStreamObject(
-            codec=AudioCodec.AAC,
-            channels=2,
-            bitrate=str(bitrate)
-        )
-
-        video_stream = VideoStreamObject(
-            codec=VideoCodec.H264
-        )
-
-        key = Callback(PlayHLS, channel_id=channel_id, bitrate=str(bitrate), format=format, offset=offset)
-
-        part_object = PartObject(
-            key = key,
-            streams = [audio_stream, video_stream]
-        )
-
-        media_object.parts = [part_object]
+        media_object = flow_builder.build_media_object(play_callback)
 
         media_objects.append(media_object)
 
-    return media_objects
+    video.items = media_objects
+
+    return video
 
 @indirect
 @route(common.PREFIX + '/play_hls')
 def PlayHLS(channel_id, bitrate, format, offset, **params):
     response = service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
                                      offset=offset, other_server=util.other_server())
-
-    #Log(response['url'])
-
-
     url = response['url']
 
     if not url:

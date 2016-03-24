@@ -1,10 +1,9 @@
 import sys
 import urllib
+import json
 from lxml import html
 
 try:
-
-
     from urllib2 import Request, urlopen
 except:
     from urllib.request import Request, urlopen
@@ -51,9 +50,6 @@ class HttpService():
         else:
             return content
 
-    def to_document(self, buffer):
-        return html.fromstring(buffer)
-
     def get_play_list(self, url):
         path = url.split('/')
         path.pop()
@@ -69,3 +65,12 @@ class HttpService():
                 new_lines.append(path + '/' + line)
 
         return "\n".join(new_lines)
+
+    def to_document(self, buffer):
+        return html.fromstring(buffer)
+
+    def to_json(self, buffer):
+        if not buffer:
+            buffer = "{}"
+
+        return json.loads(buffer)

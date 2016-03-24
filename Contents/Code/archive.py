@@ -5,6 +5,7 @@ import util
 import common
 import pagination
 import bookmarks
+import flow_builder
 
 @route(common.PREFIX + '/archive_menu')
 def GetArchiveMenu():
@@ -247,8 +248,11 @@ def append_sorting_controls(oc, handler, **params):
             thumb="thumb"
     ))
 
+def originally_available_at(on_air):
+    return Datetime.ParseDate(on_air.replace('+', ' ')).date()
+
 def GetVideoObject(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
-    video = build_metadata_object(media_type=media_type, name=name, year=year, index=index)
+    video = flow_builder.build_metadata_object(media_type=media_type, name=name, year=year, index=index)
 
     video.rating_key = rating_key
     video.thumb = thumb
@@ -265,56 +269,18 @@ def GetVideoObject(id, media_type, name, thumb, rating_key, description, duratio
     video.items = []
 
     for format, bitrates in service.bitrates(files, util.get_format(), util.get_quality_level()).iteritems():
-        video.items.extend(MediaObjectsForURL(id=id, format=str(format), bitrates=json.dumps(bitrates)))
+        media_objects = []
+
+        for bitrate in sorted(bitrates, reverse=True):
+            play_callback = Callback(PlayVideo, id=id, bitrate=bitrate, format=str(format))
+
+            media_object = flow_builder.build_media_object(play_callback)
+
+            media_objects.append(media_object)
+
+        video.items.extend(media_objects)
 
     return video
-
-def build_metadata_object(media_type, name, year, index=None):
-    if media_type == 'episode':
-        video = EpisodeObject(show=name, index=int(index))
-    elif media_type == 'movie':
-        video = MovieObject(title=name, year=int(year))
-    else:
-        video = VideoClipObject(title=name, year=int(year))
-
-    return video
-
-def MediaObjectsForURL(id, format, bitrates):
-    media_objects = []
-
-    for bitrate in sorted(json.loads(bitrates), reverse=True):
-        media_object = MediaObject(
-            # protocol = Protocol.HLS,
-            # container=Container.MPEGTS,
-            # video_resolution=720,
-            optimized_for_streaming=True
-        )
-
-        audio_stream = AudioStreamObject(
-            # codec=AudioCodec.AAC,
-            channels=2
-            # bitrate=str(bitrate)
-        )
-
-        video_stream = VideoStreamObject(
-            # codec=VideoCodec.H264
-        )
-
-        key = Callback(PlayVideo, id=id, format=format, bitrate=str(bitrate))
-
-        part_object = PartObject(
-            key = key,
-            streams = [audio_stream, video_stream]
-        )
-
-        media_object.parts = [part_object]
-
-        media_objects.append(media_object)
-
-    return media_objects
-
-def originally_available_at(on_air):
-    return Datetime.ParseDate(on_air.replace('+', ' ')).date()
 
 @indirect
 @route(common.PREFIX + '/play_video')

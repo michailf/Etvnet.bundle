@@ -1,10 +1,27 @@
-def empty_play_back():
-    pass
+def build_metadata_object(media_type, name, year, index=None):
+    if media_type == 'episode':
+        # video = EpisodeObject(show=name, index=int(index))
+        video = EpisodeObject()
+        video.show = name
+        video.year = int(year)
+        video.index = int(index)
+    elif media_type == 'movie':
+        # video = MovieObject(title=name, year=int(year))
+        video = MovieObject()
+        video.title = name
+        video.year = int(year)
+    else:
+        #video = VideoClipObject(title=name, year=int(year))
+        video = VideoClipObject()
+        video.title = name
+        video.year = int(year)
 
-def build_media_objects(play_callback=Callback(empty_play_back)):
+    return video
+
+def build_media_objects(play_callback, **params):
     media_objects = []
 
-    media_object = build_media_object(play_callback)
+    media_object = build_media_object(play_callback, **params)
 
     media_objects.append(media_object)
 

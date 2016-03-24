@@ -97,7 +97,7 @@ class EtvnetService(ApiService):
 
         path = self.build_url(path, **params)
 
-        result = self.full_request(path)
+        result = self.to_json(self.full_request(path))
 
         print(result)
 
@@ -157,13 +157,13 @@ class EtvnetService(ApiService):
 
         self.last_url_requested = url
 
-        return self.full_request(url)
+        return self.to_json(self.full_request(url))
 
     def get_channels(self, today=False):
         path = 'video/channels.json'
         # today = (None, 'yes')[today is True]
 
-        return self.full_request(self.build_url(path, today=today))
+        return self.to_json(self.full_request(self.build_url(path, today=today)))
 
     def get_children(self, media_id, per_page=PER_PAGE, page=1, dir=None):
         path = 'video/media/%d/children.json' % media_id
@@ -171,7 +171,7 @@ class EtvnetService(ApiService):
 
         self.last_url_requested = url
 
-        return self.full_request(url)
+        return self.to_json(self.full_request(url))
 
     def get_genres(self, parent_id=None, today=False, channel_id=None, format=None):
         path = 'video/genres.json'
@@ -179,7 +179,7 @@ class EtvnetService(ApiService):
 
         url = self.build_url(path, parent=parent_id, today=today, channel=channel_id, format=format)
 
-        result = self.full_request(url)
+        result = self.to_json(self.full_request(url))
 
         # regroup genres
 
@@ -241,7 +241,7 @@ class EtvnetService(ApiService):
 
         path = 'video/media/search.json'
 
-        return self.full_request(self.build_url(path, q=query, per_page=per_page, page=page, dir=dir))
+        return self.to_json(self.full_request(self.build_url(path, q=query, per_page=per_page, page=page, dir=dir)))
 
     def get_new_arrivals(self, genre=None, channel_id=None, per_page=PER_PAGE, page=1):
         if channel_id and genre:
@@ -255,14 +255,14 @@ class EtvnetService(ApiService):
 
         url = self.build_url(path, per_page=per_page, page=page)
 
-        return self.full_request(url)
+        return self.to_json(self.full_request(url))
 
     def get_sorted_by(self, field):
         url = self.last_url_requested
 
         url.params['order_by'] = field
 
-        return self.full_request(url)
+        return self.to_json(self.full_request(url))
 
     def get_by_letter(self, letter):
         url = self.last_url_requested
@@ -270,20 +270,20 @@ class EtvnetService(ApiService):
         url.params['order_by'] = 'simple_name'
         url.params['first_letter'] = letter
 
-        return self.full_request(url)
+        return self.to_json(self.full_request(url))
 
     def get_history(self, per_page=PER_PAGE, page=1):
         url = self.build_url('video/media/history.json', per_page=per_page, page=page)
 
         self.last_url_requested = url
 
-        return self.full_request(url)
+        return self.to_json(self.full_request(url))
 
     def get_bookmark(self, id):
-        return self.full_request(self.build_url('video/bookmarks/items/%d.json' % int(id)), method='GET')
+        return self.to_json(self.full_request(self.build_url('video/bookmarks/items/%d.json' % int(id)), method='GET'))
 
     def add_bookmark(self, id):
-        return self.full_request(self.build_url('video/bookmarks/items/%d.json' % int(id)), method='POST')
+        return self.to_json(self.full_request(self.build_url('video/bookmarks/items/%d.json' % int(id)), method='POST'))
 
     def remove_bookmark(self, id):
         return self.full_request(self.build_url('video/bookmarks/items/%d.json' % int(id)), method='DELETE')
@@ -298,17 +298,17 @@ class EtvnetService(ApiService):
 
             path = 'video/bookmarks/items.json'
 
-        return self.full_request(self.build_url(path, **params))
+        return self.to_json(self.full_request(self.build_url(path, **params)))
 
     def add_favorite_channel(self, id):
         path = 'video/live/%d/favorite.json' % int(id)
 
-        return self.full_request(self.build_url(path), method='POST')
+        return self.to_json(self.full_request(self.build_url(path), method='POST'))
 
     def remove_favorite_channel(self, id):
         path = 'video/live/%d/favorite.json' % int(id)
 
-        return self.full_request(self.build_url(path), method='DELETE')
+        return self.to_json(self.full_request(self.build_url(path), method='DELETE'))
 
     def get_live_channels(self, favorite_only=None, offset=None, category=0):
         format = 'mp4'
@@ -316,19 +316,19 @@ class EtvnetService(ApiService):
         params = {"format": format, "allowed_only": 1, "favorite_only": favorite_only, "offset": offset}
 
         if category:
-            return self.full_request(self.build_url('video/live/category/%d.json?' % int(category), **params))
+            return self.to_json(self.full_request(self.build_url('video/live/category/%d.json?' % int(category), **params)))
         else:
-            return self.full_request(self.build_url('video/live/channels.json', **params))
+            return self.to_json(self.full_request(self.build_url('video/live/channels.json', **params)))
 
     def get_live_schedule(self, live_channel_id, date=date.today()):
         url = self.build_url("video/live/schedule/%d.json" % int(live_channel_id), date=date)
 
-        return self.full_request(url)
+        return self.to_json(self.full_request(url))
 
     def get_live_categories(self):
         url = self.build_url("video/live/category.json")
 
-        result = self.full_request(url)
+        result = self.to_json(self.full_request(url))
 
         # regroup categories
 
@@ -355,9 +355,9 @@ class EtvnetService(ApiService):
 
         url = self.build_url("video/media/%s.json" % id, **params)
 
-        return self.full_request(url)
+        return self.to_json(self.full_request(url))
 
     def get_folders(self, per_page=PER_PAGE):
         params = {"per_page": per_page}
 
-        return self.full_request('video/bookmarks/folders.json', **params)
+        return self.to_json(self.full_request('video/bookmarks/folders.json', **params))

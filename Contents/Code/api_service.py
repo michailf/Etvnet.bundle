@@ -1,7 +1,5 @@
 import time
 
-import json
-
 from urllib2 import HTTPError
 
 try:
@@ -113,8 +111,6 @@ class ApiService(AuthService):
 
                 self.config.save(response)
 
-                # return True
-
             return False
         except HTTPError as e:
             if e.code == 400:
@@ -125,7 +121,7 @@ class ApiService(AuthService):
         if not self.check_token():
             self.authorization()
 
-        response = None
+        result = None
 
         try:
             access_token = self.config.get_value('access_token')
@@ -134,9 +130,7 @@ class ApiService(AuthService):
 
             response = self.api_request(self.api_url, access_path, method, data, *a, **k)
 
-            # if len(response) > 0:
-            #     response = json.loads(response)
-            response = json.loads(response.read())
+            result = response.read()
         except HTTPError as e:
             if e.code == 401 and not unauthorized:
                 #or e.code == 400:
@@ -147,10 +141,10 @@ class ApiService(AuthService):
                 if response:
                     self.config.save(response)
 
-                    response = self.full_request(path, method, data, unauthorized=True, *a, **k)
+                    result = self.full_request(path, method, data, unauthorized=True, *a, **k)
                 else:
                     print('error')
             else:
                 print(e)
 
-        return response
+        return result
