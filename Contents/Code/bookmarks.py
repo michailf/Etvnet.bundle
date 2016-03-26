@@ -8,13 +8,13 @@ def append_controls(oc, **params):
         oc.add(DirectoryObject(
                 key=Callback(HandleRemoveBookmark, **params),
                 title=unicode(L('Remove Bookmark')),
-                thumb=R(REMOVE_ICON)
+                thumb=R(common.REMOVE_ICON)
         ))
     else:
         oc.add(DirectoryObject(
                 key=Callback(HandleAddBookmark, **params),
                 title=unicode(L('Add Bookmark')),
-                thumb=R(ADD_ICON)
+                thumb=R(common.ADD_ICON)
         ))
 
 @route(common.PREFIX + '/add_bookmark')

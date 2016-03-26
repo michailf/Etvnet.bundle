@@ -28,7 +28,7 @@ def GetArchiveMenu():
         key = Callback(SearchMovies),
         title = unicode(L("Movies Search")),
         prompt = unicode(L('Search on Etvnet')),
-        thumb = R(SEARCH_ICON)))
+        thumb = R(common.SEARCH_ICON)))
 
     return oc
 
@@ -41,7 +41,7 @@ def SearchMovies(query=None, page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=SearchMovies, query=query, params=params)
+    pagination.append_controls(oc, response['data'], page=page, callback=SearchMovies, query=query, params=params)
 
     if len(oc) < 1:
         return util.no_contents('Movies Search')
@@ -69,7 +69,7 @@ def HandleTopic(id, page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, callback=HandleTopic, id=id, page=page, params=params)
+    pagination.append_controls(oc, response['data'], callback=HandleTopic, id=id, page=page, params=params)
 
     return oc
 
@@ -99,7 +99,7 @@ def HandleChannel(id, name, page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=HandleChannel, id=id, name=name, params=params)
+    pagination.append_controls(oc, response['data'], page=page, callback=HandleChannel, id=id, name=name, params=params)
 
     return oc
 
@@ -112,7 +112,7 @@ def HandleGenre(id, name, page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=HandleGenre, id=id, name=name, params=params)
+    pagination.append_controls(oc, response['data'], page=page, callback=HandleGenre, id=id, name=name, params=params)
 
     return oc
 
@@ -125,7 +125,7 @@ def GetBlockbusters(page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=GetBlockbusters, params=params)
+    pagination.append_controls(oc, response['data'], page=page, callback=GetBlockbusters, params=params)
 
     return oc
 
@@ -138,7 +138,7 @@ def GetCoolMovies(page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=GetCoolMovies, params=params)
+    pagination.append_controls(oc, response['data'], page=page, callback=GetCoolMovies, params=params)
 
     return oc
 
@@ -151,7 +151,7 @@ def GetNewArrivals(page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=GetNewArrivals)
+    pagination.append_controls(oc, response['data'], page=page, callback=GetNewArrivals)
 
     return oc
 
@@ -164,7 +164,7 @@ def GetHistory(page=1, **params):
     for media in HandleMediaList(response['data']['media']):
         oc.add(media)
 
-    pagination.append_controls(oc, response, page=page, callback=GetHistory, params=params)
+    pagination.append_controls(oc, response['data'], page=page, callback=GetHistory, params=params)
 
     return oc
 
@@ -219,7 +219,7 @@ def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
     bookmarks.append_controls(oc, id=id, name=name, thumb=thumb)
     append_sorting_controls(oc, HandleChildren, id=id, name=name, thumb=thumb, in_queue=in_queue, page=page, dir=dir)
 
-    pagination.append_controls(oc, response, callback=HandleChildren, id=id, name=name, thumb=thumb,
+    pagination.append_controls(oc, response['data'], callback=HandleChildren, id=id, name=name, thumb=thumb,
                                in_queue=in_queue, page=page, dir=dir)
 
     return oc

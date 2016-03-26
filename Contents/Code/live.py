@@ -50,8 +50,8 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
                     thumb=Resource.ContentsOfURLWithFallback(url=thumb)
             ))
 
-    add_pagination_to_response(response, page)
-    pagination.append_controls(oc, response, callback=GetLiveChannels, title=title, favorite_only=favorite_only,
+    add_pagination_to_response(response['data'], page)
+    pagination.append_controls(oc, response['data'], callback=GetLiveChannels, title=title, favorite_only=favorite_only,
                                page=page)
 
     return oc
@@ -231,13 +231,13 @@ def append_controls(oc, **params):
         oc.add(DirectoryObject(
                 key=Callback(HandleRemoveFavoriteChannel, type=type, **params),
                 title=unicode(L('Remove Favorite')),
-                thumb=R(REMOVE_ICON)
+                thumb=R(common.REMOVE_ICON)
         ))
     else:
         oc.add(DirectoryObject(
                 key=Callback(HandleAddFavoriteChannel, type=type, **params),
                 title=unicode(L('Add Favorite')),
-                thumb=R(ADD_ICON)
+                thumb=R(common.ADD_ICON)
         ))
 
 def find_channel(id, favorite_channels):
@@ -263,7 +263,7 @@ def HandleRemoveFavoriteChannel(**params):
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Favorite Removed')))
 
 def add_pagination_to_response(response, page):
-    pages = len(response['data']) / util.get_elements_per_page()
+    pages = len(response) / util.get_elements_per_page()
 
     response['data'] = {'pagination': {
         'page': page,
