@@ -33,13 +33,6 @@ class HttpService():
             for key, value in headers.items():
                 request.add_header(key, value)
 
-        # response = urlopen(request).read()
-        #
-        # if sys.version_info.major == 3:
-        #     response = response.decode('utf-8')
-        #
-        # return response
-
         return urlopen(request)
 
     def get_content(self, response):
@@ -65,6 +58,13 @@ class HttpService():
                 new_lines.append(path + '/' + line)
 
         return "\n".join(new_lines)
+
+    def fetch_document(self, url):
+        response = self.http_request(url)
+
+        content = response.read()
+
+        return self.to_document(content)
 
     def to_document(self, buffer):
         return html.fromstring(buffer)

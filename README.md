@@ -80,7 +80,7 @@ You need to extract this archive into the <plugins_home>:
 
 ```bash
 cd ~/Library/Application\ Support/Plex\ Media\ Server/Plug-ins
-git clone git@github.com:shvets/etvnet-plex-plugin.git
+git clone git@github.com:shvets/Etvnet.bundle.git
 ```
 
 See how to manually install a channel [here] [manually-install-a-channel]

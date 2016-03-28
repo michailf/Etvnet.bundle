@@ -64,5 +64,4 @@ target/
 .idea
 tmp
 etvnet.config
-youtube.config
 build
