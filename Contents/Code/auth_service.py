@@ -16,11 +16,14 @@ class AuthService(HttpService):
         self.grant_type = grant_type
         self.scope = scope
 
-    def get_activation_codes(self, include_client_secret=True):
+    def get_activation_codes(self, include_client_secret=True, include_client_id=False):
         data = {'scope': self.scope}
 
         if include_client_secret:
             data['client_secret'] = self.client_secret
+
+        if include_client_id:
+            data['client_id'] = self.client_id
 
         response = self.auth_request(data, 'device/code')
 

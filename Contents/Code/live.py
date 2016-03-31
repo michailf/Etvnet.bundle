@@ -6,7 +6,6 @@ import util
 import common
 import pagination
 import archive
-import flow_builder
 
 @route(common.PREFIX + '/live_channels_menu')
 def GetLiveChannelsMenu():
@@ -91,7 +90,7 @@ def GetVideoObject(name, channel_id, thumb, files):
     for bitrate in sorted(bitrates[format], reverse=True):
         play_callback = Callback(PlayHLS, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
 
-        media_object = flow_builder.build_media_object(play_callback)
+        media_object = builder.build_media_object(play_callback)
 
         media_objects.append(media_object)
 

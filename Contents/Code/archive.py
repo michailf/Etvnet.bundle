@@ -5,7 +5,6 @@ import util
 import common
 import pagination
 import bookmarks
-import flow_builder
 
 @route(common.PREFIX + '/archive_menu')
 def GetArchiveMenu():
@@ -252,7 +251,7 @@ def originally_available_at(on_air):
     return Datetime.ParseDate(on_air.replace('+', ' ')).date()
 
 def GetVideoObject(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
-    video = flow_builder.build_metadata_object(media_type=media_type, name=name, year=year, index=index)
+    video = builder.build_metadata_object(media_type=media_type, name=name, year=year, index=index)
 
     video.rating_key = rating_key
     video.thumb = thumb
@@ -274,7 +273,7 @@ def GetVideoObject(id, media_type, name, thumb, rating_key, description, duratio
         for bitrate in sorted(bitrates, reverse=True):
             play_callback = Callback(PlayVideo, id=id, bitrate=bitrate, format=str(format))
 
-            media_object = flow_builder.build_media_object(play_callback)
+            media_object = builder.build_media_object(play_callback)
 
             media_objects.append(media_object)
 

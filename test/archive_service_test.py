@@ -161,6 +161,10 @@ class EtvnetServiceTest(unittest.TestCase):
 
         self.print_url_data(url_data, bitrates)
 
+        new_url_data = self.service.http_request(url_data['url']).read()
+
+        print new_url_data
+
     def test_container(self):
         result = self.service.get_archive(channel=3)
 
