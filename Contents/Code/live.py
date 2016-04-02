@@ -49,14 +49,14 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
                     thumb=Resource.ContentsOfURLWithFallback(url=thumb)
             ))
 
-    add_pagination_to_response(response['data'], page)
-    pagination.append_controls(oc, response['data'], callback=GetLiveChannels, title=title, favorite_only=favorite_only,
+    add_pagination_to_response(response, page)
+    pagination.append_controls(oc, response, callback=GetLiveChannels, title=title, favorite_only=favorite_only,
                                page=page)
 
     return oc
 
 @route(common.PREFIX + '/live_channel')
-def GetLiveChannel(name, channel_id, thumb, files, container=False):
+def GetLiveChannel(name, channel_id, thumb, files, container=False, **params):
     oc = ObjectContainer(title2=unicode(name))
 
     oc.add(GetVideoObject(name, channel_id, thumb, files))
@@ -88,7 +88,7 @@ def GetVideoObject(name, channel_id, thumb, files):
     media_objects = []
 
     for bitrate in sorted(bitrates[format], reverse=True):
-        play_callback = Callback(PlayHLS, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
+        play_callback = Callback(PlayLive, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
 
         media_object = builder.build_media_object(play_callback)
 
@@ -99,8 +99,8 @@ def GetVideoObject(name, channel_id, thumb, files):
     return video
 
 @indirect
-@route(common.PREFIX + '/play_hls')
-def PlayHLS(channel_id, bitrate, format, offset, **params):
+@route(common.PREFIX + '/play_live')
+def PlayLive(channel_id, bitrate, format, offset):
     response = service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
                                      offset=offset, other_server=util.other_server())
     url = response['url']
@@ -108,11 +108,9 @@ def PlayHLS(channel_id, bitrate, format, offset, **params):
     if not url:
         util.no_contents()
     else:
-        new_url = Callback(Playlist, url=url)
+        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
 
-        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(new_url))
-
-@route(common.PREFIX + '/Playlist.m3u8')
+@route(common.PREFIX + '/Playlist')
 def Playlist(url):
     return service.get_play_list(url)
 
