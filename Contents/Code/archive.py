@@ -291,9 +291,9 @@ def PlayVideo(id, bitrate, format):
     if not url:
         util.no_contents()
     else:
-        new_url = Callback(Playlist, url=url)
+        # new_url = Callback(Playlist, url=url)
 
-        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(new_url))
+        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
 
 @route(common.PREFIX + '/Playlist.m3u8')
 def Playlist(url):
