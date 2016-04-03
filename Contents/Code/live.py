@@ -44,14 +44,14 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
             files = media['files']
 
             oc.add(DirectoryObject(
-                    key=Callback(GetLiveChannel, name=name, channel_id=id, thumb=thumb, files=json.dumps(files)),
+                    key=Callback(GetLiveChannel, name=name, channel_id=id, thumb=thumb, files=json.dumps(files), **params),
                     title=unicode(name),
                     thumb=Resource.ContentsOfURLWithFallback(url=thumb)
             ))
 
     add_pagination_to_response(response, page)
-    pagination.append_controls(oc, response, callback=GetLiveChannels, title=title, favorite_only=favorite_only,
-                               page=page)
+    pagination.append_controls(oc, response['data'], callback=GetLiveChannels, title=title, favorite_only=favorite_only,
+                               page=page, **params)
 
     return oc
 
@@ -97,22 +97,6 @@ def GetVideoObject(name, channel_id, thumb, files):
     video.items = media_objects
 
     return video
-
-@indirect
-@route(common.PREFIX + '/play_live')
-def PlayLive(channel_id, bitrate, format, offset):
-    response = service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
-                                     offset=offset, other_server=util.other_server())
-    url = response['url']
-
-    if not url:
-        util.no_contents()
-    else:
-        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
-
-@route(common.PREFIX + '/Playlist')
-def Playlist(url):
-    return service.get_play_list(url)
 
 @route(common.PREFIX + '/schedule')
 def GetSchedule(channel_id):
@@ -260,7 +244,7 @@ def HandleRemoveFavoriteChannel(**params):
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Favorite Removed')))
 
 def add_pagination_to_response(response, page):
-    pages = len(response) / util.get_elements_per_page()
+    pages = len(response['data']) / util.get_elements_per_page()
 
     response['data'] = {'pagination': {
         'page': page,
@@ -268,3 +252,20 @@ def add_pagination_to_response(response, page):
         'has_next': page < pages,
         'has_previous': page > 1
     }}
+
+@indirect
+@route(common.PREFIX + '/play_live')
+def PlayLive(channel_id, bitrate, format, offset):
+    response = service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
+                               offset=offset, other_server=util.other_server())
+    url = response['url']
+
+    if not url:
+        util.no_contents()
+    else:
+        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
+
+
+@route(common.PREFIX + '/Playlist')
+def Playlist(url):
+    return service.get_play_list(url)
