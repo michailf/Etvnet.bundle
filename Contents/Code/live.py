@@ -59,7 +59,7 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
 def GetLiveChannel(name, channel_id, thumb, files, container=False, **params):
     oc = ObjectContainer(title2=unicode(name))
 
-    oc.add(GetVideoObject(name, channel_id, thumb, files))
+    oc.add(MetadataObjectForURL(name, channel_id, thumb, files))
 
     if not container:
         oc.add(DirectoryObject(key=Callback(GetSchedule, channel_id=channel_id), title=unicode(L('Schedule'))))
@@ -68,22 +68,29 @@ def GetLiveChannel(name, channel_id, thumb, files, container=False, **params):
 
     return oc
 
-def GetVideoObject(name, channel_id, thumb, files):
+def MetadataObjectForURL(name, channel_id, thumb, files):
     video = MovieObject(
         rating_key='rating_key',
         title=unicode(name),
         thumb=Resource.ContentsOfURLWithFallback(url=thumb)
     )
 
+    video.key = Callback(GetLiveChannel, name=name, channel_id=channel_id, thumb=thumb, files=files, container=True)
+
     offset = service.get_offset(util.get_time_shift())
 
     format ='mp4'
 
-    new_files = json.loads(urllib.unquote_plus(files))
+    files = json.loads(urllib.unquote_plus(files))
 
-    bitrates = service.bitrates(new_files, accepted_format=format, quality_level=util.get_quality_level())
+    bitrates = service.bitrates(files, accepted_format=format, quality_level=util.get_quality_level())
 
-    video.key = Callback(GetLiveChannel, name=name, channel_id=channel_id, thumb=thumb, files=files, container=True)
+    video.items.extend(MediaObjectsForURL(bitrates, channel_id, offset, format))
+
+    return video
+
+def MediaObjectsForURL(bitrates, channel_id, offset, format):
+    items = []
 
     media_objects = []
 
@@ -94,9 +101,9 @@ def GetVideoObject(name, channel_id, thumb, files):
 
         media_objects.append(media_object)
 
-    video.items = media_objects
+    items.extend(media_objects)
 
-    return video
+    return items
 
 @route(common.PREFIX + '/schedule')
 def GetSchedule(channel_id):

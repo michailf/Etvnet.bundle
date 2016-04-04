@@ -227,7 +227,7 @@ def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
 def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index, files, container=False, **params):
     oc = ObjectContainer(title2=unicode(name))
 
-    oc.add(GetVideoObject(id, 'movie', name, thumb, rating_key, description, duration, year, on_air, index, files))
+    oc.add(MetadataObjectForURL(id, 'movie', name, thumb, rating_key, description, duration, year, on_air, index, files))
 
     if str(container) == 'False':
         bookmarks.append_controls(oc, id=id, name=name, thumb=thumb, rating_key=rating_key,
@@ -250,7 +250,7 @@ def append_sorting_controls(oc, handler, **params):
 def originally_available_at(on_air):
     return Datetime.ParseDate(on_air.replace('+', ' ')).date()
 
-def GetVideoObject(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
+def MetadataObjectForURL(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
     video = builder.build_metadata_object(media_type=media_type, name=name, year=year, index=index)
 
     video.rating_key = rating_key
@@ -265,26 +265,31 @@ def GetVideoObject(id, media_type, name, thumb, rating_key, description, duratio
 
     files = json.loads(urllib.unquote_plus(files))
 
-    video.items = []
+    video.items.extend(MediaObjectsForURL(files=files, media_id=id))
+
+    return video
+
+def MediaObjectsForURL(files, media_id):
+    items = []
 
     for format, bitrates in service.bitrates(files, util.get_format(), util.get_quality_level()).iteritems():
         media_objects = []
 
         for bitrate in sorted(bitrates, reverse=True):
-            play_callback = Callback(PlayVideo, id=id, bitrate=bitrate, format=str(format))
+            play_callback = Callback(PlayVideo, media_id=media_id, bitrate=bitrate, format=str(format))
 
             media_object = builder.build_media_object(play_callback)
 
             media_objects.append(media_object)
 
-        video.items.extend(media_objects)
+        items.extend(media_objects)
 
-    return video
+    return items
 
 @indirect
 @route(common.PREFIX + '/play_video')
-def PlayVideo(id, bitrate, format):
-    response = service.get_url(media_id=id, format=format, bitrate=bitrate, other_server=util.other_server())
+def PlayVideo(media_id, bitrate, format):
+    response = service.get_url(media_id=media_id, format=format, bitrate=bitrate, other_server=util.other_server())
 
     url = response['url']
 
