@@ -272,13 +272,14 @@ def MetadataObjectForURL(id, media_type, name, thumb, rating_key, description, d
 def MediaObjectsForURL(files, media_id):
     items = []
 
-    for format, bitrates in service.bitrates(files, util.get_format(), util.get_quality_level()).iteritems():
+    #for format, bitrates in service.bitrates(files, util.get_format(), util.get_quality_level()).iteritems():
+    for format, bitrates in service.bitrates(files, util.get_format()).iteritems():
         media_objects = []
 
         for bitrate in sorted(bitrates, reverse=True):
             play_callback = Callback(PlayVideo, media_id=media_id, bitrate=bitrate, format=str(format))
 
-            media_object = builder.build_media_object(play_callback)
+            media_object = builder.build_media_object(play_callback, video_resolution=bitrate)
 
             media_objects.append(media_object)
 

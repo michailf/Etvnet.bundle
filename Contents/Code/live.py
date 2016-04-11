@@ -83,7 +83,8 @@ def MetadataObjectForURL(name, channel_id, thumb, files):
 
     files = json.loads(urllib.unquote_plus(files))
 
-    bitrates = service.bitrates(files, accepted_format=format, quality_level=util.get_quality_level())
+    #bitrates = service.bitrates(files, accepted_format=format, quality_level=util.get_quality_level())
+    bitrates = service.bitrates(files, accepted_format=format)
 
     video.items.extend(MediaObjectsForURL(bitrates, channel_id, offset, format))
 
@@ -97,7 +98,7 @@ def MediaObjectsForURL(bitrates, channel_id, offset, format):
     for bitrate in sorted(bitrates[format], reverse=True):
         play_callback = Callback(PlayLive, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
 
-        media_object = builder.build_media_object(play_callback)
+        media_object = builder.build_media_object(play_callback, video_resolution=bitrate)
 
         media_objects.append(media_object)
 
