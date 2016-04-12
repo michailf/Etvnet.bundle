@@ -76,7 +76,7 @@
         "id": "quality_level",
         "type": "enum",
         "label": "Quality Level",
-        "default": "High",
+        "default": "All Levels",
         "values": [
             "All Levels",
             "Best",

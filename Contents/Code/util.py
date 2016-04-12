@@ -1,3 +1,5 @@
+RAW_HLS_CLIENTS = ['Android', 'iOS', 'Roku', 'Safari', 'tvOS']
+
 def get_language():
     return Prefs['language'].split('/')[1]
 

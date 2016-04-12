@@ -68,44 +68,6 @@ def GetLiveChannel(name, channel_id, thumb, files, container=False, **params):
 
     return oc
 
-def MetadataObjectForURL(name, channel_id, thumb, files):
-    video = MovieObject(
-        rating_key='rating_key',
-        title=unicode(name),
-        thumb=Resource.ContentsOfURLWithFallback(url=thumb)
-    )
-
-    video.key = Callback(GetLiveChannel, name=name, channel_id=channel_id, thumb=thumb, files=files, container=True)
-
-    offset = service.get_offset(util.get_time_shift())
-
-    format ='mp4'
-
-    files = json.loads(urllib.unquote_plus(files))
-
-    #bitrates = service.bitrates(files, accepted_format=format, quality_level=util.get_quality_level())
-    bitrates = service.bitrates(files, accepted_format=format)
-
-    video.items.extend(MediaObjectsForURL(bitrates, channel_id, offset, format))
-
-    return video
-
-def MediaObjectsForURL(bitrates, channel_id, offset, format):
-    items = []
-
-    media_objects = []
-
-    for bitrate in sorted(bitrates[format], reverse=True):
-        play_callback = Callback(PlayLive, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
-
-        media_object = builder.build_media_object(play_callback, video_resolution=bitrate)
-
-        media_objects.append(media_object)
-
-    items.extend(media_objects)
-
-    return items
-
 @route(common.PREFIX + '/schedule')
 def GetSchedule(channel_id):
     oc = ObjectContainer(title2=unicode(L('Schedule')))
@@ -260,6 +222,53 @@ def add_pagination_to_response(response, page):
         'has_next': page < pages,
         'has_previous': page > 1
     }}
+
+def MetadataObjectForURL(name, channel_id, thumb, files):
+    video = MovieObject(
+        rating_key='rating_key',
+        title=unicode(name),
+        thumb=Resource.ContentsOfURLWithFallback(url=thumb)
+    )
+
+    video.key = Callback(GetLiveChannel, name=name, channel_id=channel_id, thumb=thumb, files=files, container=True)
+
+    offset = service.get_offset(util.get_time_shift())
+
+    format ='mp4'
+    quality_level = util.get_quality_level()
+
+    # Log(Client.Platform in util.RAW_HLS_CLIENTS)
+    # Log(Client.Product)  # Plex Web
+    # Log(Client.Platform)  # Safari
+
+    # if Client.Platform == 'Chrome':
+    #     quality_level = util.get_quality_level()
+    # else:
+    #     quality_level = None
+
+    files = json.loads(urllib.unquote_plus(files))
+
+    bitrates = service.bitrates(files, accepted_format=format, quality_level=quality_level)
+
+    video.items.extend(MediaObjectsForURL(bitrates, channel_id, offset, format))
+
+    return video
+
+def MediaObjectsForURL(bitrates, channel_id, offset, format):
+    items = []
+
+    media_objects = []
+
+    for bitrate in sorted(bitrates[format], reverse=True):
+        play_callback = Callback(PlayLive, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
+
+        media_object = builder.build_media_object(play_callback, video_resolution=bitrate, bitrate=bitrate)
+
+        media_objects.append(media_object)
+
+    items.extend(media_objects)
+
+    return items
 
 @indirect
 @route(common.PREFIX + '/play_live')
