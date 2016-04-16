@@ -207,15 +207,20 @@ def HandleMediaList(response, in_queue=False):
     return list
 
 @route(common.PREFIX + '/children')
-def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
+def HandleChildren(id, name, thumb, operation=None, in_queue=False, page=1, dir='desc'):
     oc = ObjectContainer(title2=unicode(name))
+
+    if operation == 'add':
+        service.add_bookmark(id)
+    elif operation == 'remove':
+        service.remove_bookmark(id)
 
     response = service.get_children(int(id), per_page=util.get_elements_per_page(), page=page, dir=dir)
 
     for media in HandleMediaList(response['data']['children'], in_queue=in_queue):
         oc.add(media)
 
-    bookmarks.append_controls(oc, id=id, name=name, thumb=thumb)
+    bookmarks.append_controls(oc, HandleChildren, id=id, name=name, thumb=thumb, operation=operation)
     append_sorting_controls(oc, HandleChildren, id=id, name=name, thumb=thumb, in_queue=in_queue, page=page, dir=dir)
 
     pagination.append_controls(oc, response['data'], callback=HandleChildren, id=id, name=name, thumb=thumb,
@@ -224,15 +229,21 @@ def HandleChildren(id, name, thumb, in_queue=False, page=1, dir='desc'):
     return oc
 
 @route(common.PREFIX + '/child', container=bool)
-def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index, files, container=False, **params):
+def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index,
+                files, operation=None, container=False):
     oc = ObjectContainer(title2=unicode(name))
+
+    if operation == 'add':
+        service.add_bookmark(id)
+    elif operation == 'remove':
+        service.remove_bookmark(id)
 
     oc.add(MetadataObjectForURL(id, 'movie', name, thumb, rating_key, description, duration, year, on_air, index, files))
 
     if str(container) == 'False':
-        bookmarks.append_controls(oc, id=id, name=name, thumb=thumb, rating_key=rating_key,
-            description=description, duration=duration, year=year, on_air=on_air, files=files, container=container)
-
+        bookmarks.append_controls(oc, HandleChild, id=id, name=name, thumb=thumb,
+                                  rating_key=rating_key, description=description, duration=duration, year=year,
+                                  on_air=on_air, index=index, files=files, operation=operation, container=container)
     return oc
 
 def append_sorting_controls(oc, handler, **params):
