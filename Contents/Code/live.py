@@ -227,7 +227,8 @@ def MetadataObjectForURL(name, channel_id, thumb, files):
     video = MovieObject(
         rating_key='rating_key',
         title=unicode(name),
-        thumb=Resource.ContentsOfURLWithFallback(url=thumb)
+        thumb=thumb,
+        art=thumb
     )
 
     video.key = Callback(GetLiveChannel, name=name, channel_id=channel_id, thumb=thumb, files=files, container=True)

@@ -266,6 +266,7 @@ def MetadataObjectForURL(id, media_type, name, thumb, rating_key, description, d
 
     video.rating_key = rating_key
     video.thumb = thumb
+    video.art = thumb
     video.duration = int(duration)*60*1000
     video.summary = unicode(description)
     video.originally_available_at = originally_available_at(on_air)
