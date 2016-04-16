@@ -20,14 +20,17 @@ class ApiService(AuthService):
         AuthService.__init__(self, auth_url, client_id, client_secret, grant_type, scope)
 
     def reset_token(self):
-        if 'access_token' in self.config.config:
-            del self.config.config['access_token']
+        if 'access_token' in self.config.data:
+            del self.config.data['access_token']
 
-        if 'refresh_token' in self.config.config:
-            del self.config.config['refresh_token']
+        if 'refresh_token' in self.config.data:
+            del self.config.data['refresh_token']
 
-        if 'device_code' in self.config.config:
-            del self.config.config['device_code']
+        if 'device_code' in self.config.data:
+            del self.config.data['device_code']
+
+        if 'user_code' in self.config.data:
+            del self.config.data['user_code']
 
         self.config.save()
 
@@ -51,10 +54,10 @@ class ApiService(AuthService):
         if not on_authorization_failure:
             on_authorization_failure = self.on_authorization_failure
 
-        if self.check_access_data('device_code'):
-            activation_url = self.config.config['activation_url']
-            user_code = self.config.config['user_code']
-            device_code = self.config.config['device_code']
+        if self.check_access_data('device_code') and self.check_access_data('user_code'):
+            activation_url = self.config.data['activation_url']
+            user_code = self.config.data['user_code']
+            device_code = self.config.data['device_code']
         else:
             ac_response = self.get_activation_codes(include_client_secret=include_client_secret)
 
@@ -83,17 +86,17 @@ class ApiService(AuthService):
 
     def check_access_data(self, key):
         if key == 'device_code':
-            return key in self.config.config
+            return key in self.config.data
         else:
-            return (key in self.config.config and
-                    'expires' in self.config.config and self.config.config['expires'] >= int(time.time()))
+            return (key in self.config.data and
+                    'expires' in self.config.data and self.config.data['expires'] >= int(time.time()))
 
     def check_token(self):
         try:
             if self.check_access_data('access_token'):
                 return True
 
-            elif 'refresh_token' in self.config.config:
+            elif 'refresh_token' in self.config.data:
                 refresh_token = self.config.get_value('refresh_token')
 
                 response = self.update_token(refresh_token)
@@ -103,7 +106,7 @@ class ApiService(AuthService):
                 return True
 
             elif self.check_access_data('device_code'):
-                device_code = self.config.config['device_code']
+                device_code = self.config.data['device_code']
 
                 response = self.create_token(device_code=device_code)
 
@@ -113,8 +116,10 @@ class ApiService(AuthService):
 
             return False
         except HTTPError as e:
+            print(e)
             if e.code == 400:
                 self.reset_token()
+
             return False
 
     def full_request(self, path, method=None, data=None, unauthorized=False, *a, **k):

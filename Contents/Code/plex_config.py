@@ -5,17 +5,17 @@ from config import Config
 
 class PlexConfig(Config):
     def load(self):
-        self.config.clear()
+        self.data.clear()
 
         if Core.storage.file_exists(self.config_name):
-            self.config = json.loads(str(Core.storage.load(self.config_name)))
+            self.data = json.loads(str(Core.storage.load(self.config_name)))
 
-    def save(self, config=None):
-        if config:
-            for key, val in config.items():
-                self.config[key] = val
+    def save(self, data=None):
+        if data:
+            for key, val in data.items():
+                self.data[key] = val
 
-        if 'expires_in' in self.config:
-            self.config['expires'] = int(time.time()) + int(self.config['expires_in'])
+        if 'expires_in' in self.data:
+            self.data['expires'] = int(time.time()) + int(self.data['expires_in'])
 
-        Core.storage.save(self.config_name, json.dumps(self.config, indent=4))
+        Core.storage.save(self.config_name, json.dumps(self.data, indent=4))
