@@ -19,18 +19,6 @@ def append_controls(oc, handler, **params):
                 thumb=R(common.ADD_ICON)
         ))
 
-# @route(common.PREFIX + '/add_bookmark')
-# def HandleAddBookmark(**params):
-#     service.add_bookmark(params['id'])
-#
-#     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Bookmark Added')))
-#
-# @route(common.PREFIX + '/remove_bookmark')
-# def HandleRemoveBookmark(**params):
-#     service.remove_bookmark(params['id'])
-
-    # return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Bookmark Removed')))
-
 @route(common.PREFIX + '/bookmarks')
 def GetBookmarks():
     oc = ObjectContainer(title2=unicode(L('Bookmarks')))
