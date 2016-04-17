@@ -300,9 +300,11 @@ def MediaObjectsForURL(files, media_id):
         media_objects = []
 
         for bitrate in sorted(bitrates, reverse=True):
+            video_resolution = service.bitrate_to_resolution(bitrate)[0]
+
             play_callback = Callback(PlayVideo, media_id=media_id, bitrate=bitrate, format=str(format))
 
-            media_object = builder.build_media_object(play_callback, video_resolution=bitrate, bitrate=bitrate)
+            media_object = builder.build_media_object(play_callback, video_resolution=video_resolution, bitrate=bitrate)
 
             media_objects.append(media_object)
 

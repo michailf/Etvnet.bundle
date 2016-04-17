@@ -74,3 +74,35 @@ class HttpService():
             buffer = "{}"
 
         return json.loads(buffer)
+
+    def bitrate_to_resolution(self, bitrate):
+        # table = {
+        #     '1080': [3000, 6000],
+        #     '720': [1500, 4000],
+        #     '480': [500, 2000],
+        #     '360': [400, 1000],
+        #     '240': [300, 700]
+        # }
+        # table = {
+        #     '1080': [2000, 3000],
+        #     '720': [1000, 1800],
+        #     '480': [500, 900],
+        #     '360': [350, 450],
+        #     '240': [000, 300]
+        # }
+        table = {
+            '1080': [1000, 3000],
+            '720': [500, 999],
+            '480': [350, 499],
+            '360': [200, 349],
+            '240': [000, 199]
+        }
+
+
+        video_resolutions = []
+
+        for key, values in table.iteritems():
+            if bitrate in range(values[0], values[1]):
+                video_resolutions.append(key)
+
+        return video_resolutions

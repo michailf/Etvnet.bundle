@@ -132,6 +132,8 @@ class EtvnetServiceTest(unittest.TestCase):
 
         print('Media Url: ' + url_data['url'])
 
+        #print('Play list:\n' + self.service.get_play_list(url_data['url']))
+
     def test_media_object(self):
         result = self.service.get_archive(channel=3)
 
@@ -252,6 +254,9 @@ class EtvnetServiceTest(unittest.TestCase):
 
             self.assertEqual(result['status_code'], 200)
             self.assertNotEqual(len(result['data']), 0)
+
+    def test_get_video_resolution(self):
+        print self.service.bitrate_to_resolution(1500)
 
 if __name__ == '__main__':
     unittest.main()
