@@ -266,8 +266,10 @@ def MediaObjectsForURL(bitrates, channel_id, offset, format):
         play_callback = Callback(PlayLive, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
 
         config = {
-            "video_resolution": bitrate,
-            "bitrate": bitrate
+            "video_codec" : VideoCodec.H264,
+            "protocol": Protocol.HLS,
+            "container": Container.MPEGTS,
+            "video_resolution": bitrate
         }
 
         media_object = builder.build_media_object(play_callback, config)

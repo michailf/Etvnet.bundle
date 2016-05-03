@@ -238,7 +238,12 @@ def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air
     elif operation == 'remove':
         service.remove_bookmark(id)
 
-    oc.add(MetadataObjectForURL(id, 'movie', name, thumb, rating_key, description, duration, year, on_air, index, files))
+    if index > 0:
+        media_type = "episode"
+    else:
+        media_type = "movie"
+
+    oc.add(MetadataObjectForURL(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files))
 
     if str(container) == 'False':
         bookmarks.append_controls(oc, HandleChild, id=id, name=name, thumb=thumb,
@@ -262,24 +267,31 @@ def originally_available_at(on_air):
     return Datetime.ParseDate(on_air.replace('+', ' ')).date()
 
 def MetadataObjectForURL(id, media_type, name, thumb, rating_key, description, duration, year, on_air, index, files):
-    video = builder.build_metadata_object(media_type=media_type, name=name, year=year, index=index)
+    metadata_object = builder.build_metadata_object(media_type=media_type, title=name)
 
-    video.rating_key = rating_key
-    video.thumb = thumb
-    video.art = thumb
-    video.duration = int(duration)*60*1000
-    video.summary = unicode(description)
-    video.originally_available_at = originally_available_at(on_air)
+    if media_type == 'episode':
+        metadata_object.index = int(index)
+    else:
+        metadata_object.year = year
 
-    video.key = Callback(HandleChild, id=id, name=name, thumb=thumb,
+
+    metadata_object.rating_key = rating_key
+
+    metadata_object.thumb = thumb
+    metadata_object.art = thumb
+    metadata_object.duration = int(duration)*60*1000
+    metadata_object.summary = unicode(description)
+    metadata_object.originally_available_at = originally_available_at(on_air)
+
+    metadata_object.key = Callback(HandleChild, id=id, name=name, thumb=thumb,
                          rating_key=rating_key, description=description, duration=duration, year=year,
                          on_air=on_air, index=index, files=files, container=True)
 
     files = json.loads(urllib.unquote_plus(files))
 
-    video.items.extend(MediaObjectsForURL(files=files, media_id=id))
+    metadata_object.items.extend(MediaObjectsForURL(files=files, media_id=id))
 
-    return video
+    return metadata_object
 
 def MediaObjectsForURL(files, media_id):
     items = []
@@ -305,6 +317,9 @@ def MediaObjectsForURL(files, media_id):
             play_callback = Callback(PlayVideo, media_id=media_id, bitrate=bitrate, format=str(format))
 
             config = {
+                "video_codec" : VideoCodec.H264,
+                "protocol": Protocol.HLS,
+                "container": Container.MPEGTS,
                 "video_resolution": bitrate
             }
 
