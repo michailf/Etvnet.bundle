@@ -304,7 +304,11 @@ def MediaObjectsForURL(files, media_id):
 
             play_callback = Callback(PlayVideo, media_id=media_id, bitrate=bitrate, format=str(format))
 
-            media_object = builder.build_media_object(play_callback, video_resolution=bitrate)
+            config = {
+                "video_resolution": bitrate
+            }
+
+            media_object = builder.build_media_object(play_callback, config)
 
             media_objects.append(media_object)
 
