@@ -277,6 +277,7 @@ def MetadataObjectForURL(id, media_type, name, thumb, rating_key, description, d
 
     metadata_object.rating_key = rating_key
 
+    metadata_object.title = name
     metadata_object.thumb = thumb
     metadata_object.art = thumb
     metadata_object.duration = int(duration)*60*1000

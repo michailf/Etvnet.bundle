@@ -14,7 +14,6 @@ class FlowBuilder():
         if 'bitrate' in config.keys():
             audio_stream.bitrate = config['bitrate']
 
-
         if 'duration' in config.keys():
             audio_stream.bitrate = config['duration']
 
@@ -76,6 +75,8 @@ class FlowBuilder():
 
         elif media_type == 'track':
             metadata_object = TrackObject()
+
+            metadata_object.title = title
 
         else:
             metadata_object = VideoClipObject()
