@@ -99,8 +99,6 @@ class EtvnetService(ApiService):
 
         result = self.to_json(self.full_request(path))
 
-        print(result)
-
         if result:
           return {"url": result['data']['url'], "protocol": protocol, "format": format, "bitrate": bitrate}
         else:

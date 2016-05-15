@@ -2,6 +2,7 @@ import library_bridge
 
 AudioStreamObject = library_bridge.bridge.objects['AudioStreamObject']
 AudioCodec = library_bridge.bridge.objects['AudioCodec']
+VideoCodec = library_bridge.bridge.objects['VideoCodec']
 VideoStreamObject = library_bridge.bridge.objects['VideoStreamObject']
 PartObject = library_bridge.bridge.objects['PartObject']
 MediaObject = library_bridge.bridge.objects['MediaObject']
@@ -10,6 +11,7 @@ TVShowObject = library_bridge.bridge.objects['TVShowObject']
 MovieObject = library_bridge.bridge.objects['MovieObject']
 TrackObject = library_bridge.bridge.objects['TrackObject']
 VideoClipObject = library_bridge.bridge.objects['VideoClipObject']
+Container = library_bridge.bridge.objects['Container']
 
 class FlowBuilder():
     def build_media_object(self, play_callback, config):
@@ -97,3 +99,58 @@ class FlowBuilder():
             metadata_object.title = title
 
         return metadata_object
+
+    def get_plex_config(self, format):
+        container = None
+        video_codec = None
+        audio_codec = None
+
+        if format == 'mp4':
+            container = Container.MP4
+            video_codec = VideoCodec.H264
+            audio_codec = AudioCodec.AAC
+
+        elif format == 'avi':
+            container = Container.AVI
+            video_codec = 'mpeg4'
+            audio_codec = AudioCodec.MP3
+
+        elif format == 'ogv':
+            container = Container.OGG
+            video_codec = VideoCodec.THEORA
+            audio_codec = AudioCodec.VORBIS
+
+        elif format == 'wmv':
+            container = 'wmv'
+            video_codec = 'wmv3'
+            audio_codec = 'wmvav2'
+
+        elif format == 'mkv':
+            container = Container.MKV
+            video_codec = VideoCodec.H264
+            audio_codec = AudioCodec.AAC
+
+        elif format == 'mp3':
+            container = Container.MP3
+            video_codec = None
+            audio_codec = AudioCodec.MP3
+
+        elif format == 'flac':
+            container = Container.FLAC
+            video_codec = None
+            audio_codec = AudioCodec.FLAC
+
+        elif format == 'ogg':
+            container = Container.OGG
+            video_codec = None
+            audio_codec = AudioCodec.VORBIS
+
+        if container:
+            return {
+                'container': container,
+                'video_codec': video_codec,
+                'audio_codec': audio_codec
+
+            }
+        else:
+            return None

@@ -309,22 +309,27 @@ def MediaObjectsForURL(files, media_id):
     # else:
     #     quality_level = None
 
+    plex_config = builder.get_plex_config(format)
+
     for format, bitrates in service.bitrates(files, format, quality_level).iteritems():
         media_objects = []
 
         for bitrate in sorted(bitrates, reverse=True):
             #video_resolution = service.bitrate_to_resolution(bitrate)[0]
 
-            play_callback = Callback(PlayVideo, media_id=media_id, bitrate=bitrate, format=str(format))
+            play_callback = Callback(PlayVideoWrapper, media_id=media_id, bitrate=bitrate, format=str(format))
 
-            config = {
-                "video_codec" : VideoCodec.H264,
-                "protocol": Protocol.HLS,
-                "container": Container.MPEGTS,
-                "video_resolution": bitrate
-            }
+            # config = {
+            #     "video_codec": plex_config[''],
+            #     # "video_codec" : VideoCodec.H264,
+            #     # "protocol": Protocol.HLS,
+            #     # "container": Container.MPEGTS,
+            #     # "video_resolution": bitrate
+            # }
 
-            media_object = builder.build_media_object(play_callback, config)
+            plex_config["video_resolution"] = bitrate
+
+            media_object = builder.build_media_object(play_callback, plex_config)
 
             media_objects.append(media_object)
 
@@ -333,19 +338,32 @@ def MediaObjectsForURL(files, media_id):
     return items
 
 @indirect
-@route(constants.PREFIX + '/play_video')
-def PlayVideo(media_id, bitrate, format):
+@route(constants.PREFIX + '/play_video_wrapper')
+def PlayVideoWrapper(media_id, bitrate, format):
     response = service.get_url(media_id=media_id, format=format, bitrate=bitrate, other_server=util.other_server())
 
-    url = response['url']
+    Log(response['url'])
 
+    return PlayVideo(response['url'], play_list=False, live=False)
+
+@indirect
+@route(constants.PREFIX + '/play_video')
+def PlayVideo(url, live=True, play_list=True):
     if not url:
-        util.no_contents()
+        return util.no_contents()
     else:
-        # new_url = Callback(Playlist, url=url)
+        if str(play_list) == 'True':
+            url = Callback(PlayList, url=url)
 
-        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
+        if live:
+            key = HTTPLiveStreamURL(url)
+        else:
+            key = RTMPVideoURL(url)
 
-@route(constants.PREFIX + '/Playlist.m3u8')
-def Playlist(url):
-    return service.get_play_list(url)
+        return IndirectResponse(MovieObject, key)
+
+@route(constants.PREFIX + '/play_list.m3u8')
+def PlayList(url):
+    play_list = service.get_play_list(url)
+
+    return play_list
