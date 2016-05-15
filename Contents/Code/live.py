@@ -3,11 +3,11 @@ import datetime
 import urllib
 
 import util
-import common
+import constants
 import pagination
 import archive
 
-@route(common.PREFIX + '/live_channels_menu')
+@route(constants.PREFIX + '/live_channels_menu')
 def GetLiveChannelsMenu():
     oc = ObjectContainer(title2=unicode(L('Live')))
 
@@ -28,7 +28,7 @@ def GetLiveChannelsMenu():
 
     return oc
 
-@route(common.PREFIX + '/live_channels')
+@route(constants.PREFIX + '/live_channels')
 def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
     page = int(page)
 
@@ -55,7 +55,7 @@ def GetLiveChannels(title, favorite_only=False, category=0, page=1, **params):
 
     return oc
 
-@route(common.PREFIX + '/live_channel')
+@route(constants.PREFIX + '/live_channel')
 def GetLiveChannel(name, channel_id, thumb, files, container=False, **params):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -68,7 +68,7 @@ def GetLiveChannel(name, channel_id, thumb, files, container=False, **params):
 
     return oc
 
-@route(common.PREFIX + '/schedule')
+@route(constants.PREFIX + '/schedule')
 def GetSchedule(channel_id):
     oc = ObjectContainer(title2=unicode(L('Schedule')))
 
@@ -182,13 +182,13 @@ def append_controls(oc, **params):
         oc.add(DirectoryObject(
                 key=Callback(HandleRemoveFavoriteChannel, type=type, **params),
                 title=unicode(L('Remove Favorite')),
-                thumb=R(common.REMOVE_ICON)
+                thumb=R(constants.REMOVE_ICON)
         ))
     else:
         oc.add(DirectoryObject(
                 key=Callback(HandleAddFavoriteChannel, type=type, **params),
                 title=unicode(L('Add Favorite')),
-                thumb=R(common.ADD_ICON)
+                thumb=R(constants.ADD_ICON)
         ))
 
 def find_channel(id, favorite_channels):
@@ -201,13 +201,13 @@ def find_channel(id, favorite_channels):
 
     return found
 
-@route(common.PREFIX + '/add_favorite_channel')
+@route(constants.PREFIX + '/add_favorite_channel')
 def HandleAddFavoriteChannel(**params):
     service.add_favorite_channel(params['id'])
 
     return ObjectContainer(header=unicode(L(params['name'])), message=unicode(L('Favorite Added')))
 
-@route(common.PREFIX + '/remove_favorite_channel')
+@route(constants.PREFIX + '/remove_favorite_channel')
 def HandleRemoveFavoriteChannel(**params):
     service.remove_favorite_channel(params['id'])
 
@@ -281,7 +281,7 @@ def MediaObjectsForURL(bitrates, channel_id, offset, format):
     return items
 
 @indirect
-@route(common.PREFIX + '/play_live')
+@route(constants.PREFIX + '/play_live')
 def PlayLive(channel_id, bitrate, format, offset):
     response = service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
                                offset=offset, other_server=util.other_server())
@@ -293,6 +293,6 @@ def PlayLive(channel_id, bitrate, format, offset):
         return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
 
 
-@route(common.PREFIX + '/Playlist')
+@route(constants.PREFIX + '/Playlist')
 def Playlist(url):
     return service.get_play_list(url)

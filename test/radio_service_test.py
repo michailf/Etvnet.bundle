@@ -3,11 +3,11 @@ import test_helper
 import unittest
 import json
 
-from etvnet_radio_service import EtvnetRadioService
+from radio_service import RadioService
 
 class RadioServiceTest(unittest.TestCase):
     def setUp(self):
-        self.service = EtvnetRadioService()
+        self.service = RadioService()
 
     def test_get_stations(self):
         result = self.service.get_stations()

@@ -1,3 +1,6 @@
+import sys
+import os
+
 RAW_HLS_CLIENTS = ['Android', 'iOS', 'Roku', 'Safari', 'tvOS']
 
 def get_language():
@@ -51,3 +54,8 @@ def no_contents(name=None):
         name = 'Error'
 
     return ObjectContainer(header=unicode(L(name)), message=unicode(L('No entries found')))
+
+def add_library(path):
+    lib_path = Core.storage.abs_path(Core.storage.join_path(Core.bundle_path, 'Contents', 'Code', path))
+
+    sys.path.append(os.path.abspath(os.path.join(lib_path)))

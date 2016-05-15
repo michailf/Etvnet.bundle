@@ -43,26 +43,47 @@ class HttpService():
         else:
             return content
 
-    def get_play_list(self, url):
+    def get_base_url(self, url):
         path = url.split('/')
         path.pop()
         path = '/'.join(path)
 
+        return path
+
+    def get_play_list(self, url, base_url=None):
+        if not base_url:
+            base_url = self.get_base_url(url)
+
         lines = self.http_request(url).read().splitlines()
+
         new_lines = []
 
         for line in lines:
             if line[:1] == '#':
                 new_lines.append(line)
             else:
-                new_lines.append(path + '/' + line)
+                new_lines.append(base_url + '/' + line)
 
         return "\n".join(new_lines)
 
-    def fetch_document(self, url):
-        response = self.http_request(url)
+    def get_play_list_urls(self, url):
+        play_list = self.get_play_list(url)
 
-        content = response.read()
+        lines = play_list.splitlines()
+
+        urls = []
+
+        for line in lines:
+            if line[:1] != '#':
+                urls.append(line)
+
+        return urls
+
+    def fetch_content(self, url, headers=None):
+        return self.http_request(url, headers=headers).read()
+
+    def fetch_document(self, url, headers=None):
+        content = self.fetch_content(url, headers=headers)
 
         return self.to_document(content)
 
@@ -74,34 +95,3 @@ class HttpService():
             buffer = "{}"
 
         return json.loads(buffer)
-
-    def bitrate_to_resolution(self, bitrate):
-        # table = {
-        #     '1080': [3000, 6000],
-        #     '720': [1500, 4000],
-        #     '480': [500, 2000],
-        #     '360': [400, 1000],
-        #     '240': [300, 700]
-        # }
-        # table = {
-        #     '1080': [2000, 3000],
-        #     '720': [1000, 1800],
-        #     '480': [500, 900],
-        #     '360': [350, 450],
-        #     '240': [000, 300]
-        # }
-        table = {
-            '1080': [1500, 3000],
-            '720': [500, 1499],
-            '480': [350, 499],
-            '360': [200, 349],
-            '240': [000, 199]
-        }
-
-        video_resolutions = []
-
-        for key, values in table.iteritems():
-            if bitrate in range(values[0], values[1]):
-                video_resolutions.append(key)
-
-        return video_resolutions
