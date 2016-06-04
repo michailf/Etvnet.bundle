@@ -309,9 +309,14 @@ def MediaObjectsForURL(files, media_id):
     # else:
     #     quality_level = None
 
+    all_bitrates = service.bitrates(files)
+
+    if format not in all_bitrates:
+        format = 'wmv' if format == 'mp4' else 'mp4'
+
     plex_config = builder.get_plex_config(format)
 
-    for format, bitrates in service.bitrates(files, format, quality_level).iteritems():
+    for fm, bitrates in service.bitrates(files, format, quality_level).iteritems():
         media_objects = []
 
         for bitrate in sorted(bitrates, reverse=True):
@@ -364,6 +369,4 @@ def PlayVideo(url, live=True, play_list=True):
 
 @route(constants.PREFIX + '/play_list.m3u8')
 def PlayList(url):
-    play_list = service.get_play_list(url)
-
-    return play_list
+    return service.get_play_list(url)

@@ -235,9 +235,6 @@ def MetadataObjectForURL(name, channel_id, thumb, files):
 
     offset = service.get_offset(util.get_time_shift())
 
-    format ='mp4'
-    quality_level = util.get_quality_level()
-
     # Log(Client.Platform in util.RAW_HLS_CLIENTS)
     # Log(Client.Product)  # Plex Web
     # Log(Client.Platform)  # Safari
@@ -247,30 +244,33 @@ def MetadataObjectForURL(name, channel_id, thumb, files):
     # else:
     #     quality_level = None
 
-    files = json.loads(urllib.unquote_plus(files))
-
-    bitrates = service.bitrates(files, accepted_format=format, quality_level=quality_level)
-
-    video.items.extend(MediaObjectsForURL(bitrates, channel_id, offset, format))
+    video.items.extend(MediaObjectsForURL(files, channel_id, offset))
 
     return video
 
-def MediaObjectsForURL(bitrates, channel_id, offset, format):
+def MediaObjectsForURL(files, channel_id, offset):
     items = []
+
+    format ='mp4'
+    quality_level = util.get_quality_level()
+    files = json.loads(urllib.unquote_plus(files))
+    bitrates = service.bitrates(files, accepted_format=format, quality_level=quality_level)
+
+    config = {
+        "video_codec": VideoCodec.H264,
+        "protocol": Protocol.HLS,
+        "container": Container.MPEGTS,
+    }
 
     media_objects = []
 
     for bitrate in sorted(bitrates[format], reverse=True):
         #video_resolution = service.bitrate_to_resolution(bitrate)[0]
 
-        play_callback = Callback(PlayLive, channel_id=channel_id, bitrate=bitrate, format=format, offset=offset)
+        play_callback = Callback(PlayVideoWrapperLive, channel_id=channel_id, bitrate=bitrate, format=format,
+                                 offset=offset, live=True)
 
-        config = {
-            "video_codec" : VideoCodec.H264,
-            "protocol": Protocol.HLS,
-            "container": Container.MPEGTS,
-            "video_resolution": bitrate
-        }
+        config["video_resolution"] = bitrate
 
         media_object = builder.build_media_object(play_callback, config)
 
@@ -281,18 +281,34 @@ def MediaObjectsForURL(bitrates, channel_id, offset, format):
     return items
 
 @indirect
-@route(constants.PREFIX + '/play_live')
-def PlayLive(channel_id, bitrate, format, offset):
-    response = service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=True,
+@route(constants.PREFIX + '/play_video_wrapper_live')
+def PlayVideoWrapperLive(channel_id, bitrate, format, offset, live):
+    response = service.get_url(None, channel_id=channel_id, bitrate=bitrate, format=format, live=live,
                                offset=offset, other_server=util.other_server())
-    url = response['url']
+
+    Log(response['url'])
+
+    return PlayVideoLive(response['url'], play_list=True, live=True)
+
+@indirect
+@route(constants.PREFIX + '/play_video_live')
+def PlayVideoLive(url, live=True, play_list=True):
+    Log(play_list)
 
     if not url:
-        util.no_contents()
+        return util.no_contents()
     else:
-        return IndirectResponse(MovieObject, key=HTTPLiveStreamURL(url))
+        if str(play_list) == 'True':
+            url = Callback(PlayListLive, url=url)
+
+        if live:
+            key = HTTPLiveStreamURL(url)
+        else:
+            key = RTMPVideoURL(url)
+
+        return IndirectResponse(MovieObject, key)
 
 
-@route(constants.PREFIX + '/Playlist')
-def Playlist(url):
+@route(constants.PREFIX + '/play_list_live.m3u8')
+def PlayListLive(url):
     return service.get_play_list(url)

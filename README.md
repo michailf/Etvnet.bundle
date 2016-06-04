@@ -36,6 +36,7 @@ Logs are located here:
 
 /var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Logs/PMS\ Plugin\ Logs/com.plexapp.plugins.etvnet.log
 /var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Logs/Plex\ Media\ Server.log
+~/Library/Application\ Support/Plex\ Media\ Server/Logs/Plex\ Media\ Server.log
 
 OSX:
 ~/Library/Logs/Plex\ Media\ Server/PMS\ Plugin\ Logs/com.plexapp.plugins.etvnet.log
