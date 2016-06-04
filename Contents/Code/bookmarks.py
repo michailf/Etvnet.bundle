@@ -1,4 +1,3 @@
-import constants
 import archive
 
 def append_controls(oc, handler, **params):
@@ -9,17 +8,17 @@ def append_controls(oc, handler, **params):
         oc.add(DirectoryObject(
                 key=Callback(handler, **params),
                 title=unicode(L('Remove Bookmark')),
-                thumb=R(constants.REMOVE_ICON)
+                thumb=R(REMOVE_ICON)
         ))
     else:
         params['operation'] = 'add'
         oc.add(DirectoryObject(
                 key=Callback(handler, **params),
                 title=unicode(L('Add Bookmark')),
-                thumb=R(constants.ADD_ICON)
+                thumb=R(ADD_ICON)
         ))
 
-@route(constants.PREFIX + '/bookmarks')
+@route(PREFIX + '/bookmarks')
 def GetBookmarks():
     oc = ObjectContainer(title2=unicode(L('Bookmarks')))
 

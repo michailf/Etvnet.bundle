@@ -1,6 +1,4 @@
-import constants
-
-@route(constants.PREFIX + '/radio_menu')
+@route(PREFIX + '/radio_menu')
 def GetRadioMenu():
     oc = ObjectContainer(title2=unicode(L('Radio')))
 
@@ -17,7 +15,7 @@ def GetRadioMenu():
 
     return oc
 
-@route(constants.PREFIX + '/radio')
+@route(PREFIX + '/radio')
 def HandleRadio(id):
     response = radio_service.get_station(id=id)
 
@@ -37,7 +35,7 @@ def HandleRadio(id):
 
     return oc
 
-@route(constants.PREFIX + '/track')
+@route(PREFIX + '/track')
 def GetTrack(id, title, track_title, format, bitrates, url, container=False):
     track = MetadataObjectForURL(id, title, track_title, format, bitrates, url, container)
 
@@ -94,6 +92,6 @@ def MediaObjectsForURL(format, bitrates, url):
 
     return media_objects
 
-@route(constants.PREFIX + '/play_audio')
+@route(PREFIX + '/play_audio')
 def PlayRadio(url):
     return Redirect(url)

@@ -2,11 +2,10 @@ import json
 import urllib
 
 import util
-import constants
 import pagination
 import bookmarks
 
-@route(constants.PREFIX + '/archive_menu')
+@route(PREFIX + '/archive_menu')
 def GetArchiveMenu():
     oc = ObjectContainer(title2=unicode(L('Archive')))
 
@@ -27,11 +26,11 @@ def GetArchiveMenu():
         key = Callback(SearchMovies),
         title = unicode(L("Movies Search")),
         prompt = unicode(L('Search on Etvnet')),
-        thumb = R(constants.SEARCH_ICON)))
+        thumb = R(SEARCH_ICON)))
 
     return oc
 
-@route(constants.PREFIX + '/search_movies')
+@route(PREFIX + '/search_movies')
 def SearchMovies(query=None, page=1, **params):
     response = service.search(query=query, per_page=util.get_elements_per_page(), page=page)
 
@@ -47,7 +46,7 @@ def SearchMovies(query=None, page=1, **params):
 
     return oc
 
-@route(constants.PREFIX + '/topics_menu')
+@route(PREFIX + '/topics_menu')
 def GetTopicsMenu():
     oc = ObjectContainer(title2=unicode(L('Topics')))
 
@@ -59,7 +58,7 @@ def GetTopicsMenu():
 
     return oc
 
-@route(constants.PREFIX + '/topic')
+@route(PREFIX + '/topic')
 def HandleTopic(id, page=1, **params):
     oc = ObjectContainer(title2=unicode(L(id)))
 
@@ -72,7 +71,7 @@ def HandleTopic(id, page=1, **params):
 
     return oc
 
-@route(constants.PREFIX + '/channels')
+@route(PREFIX + '/channels')
 def GetChannels():
     oc = ObjectContainer(title2=unicode(L('Channels')))
 
@@ -89,7 +88,7 @@ def GetChannels():
 
     return oc
 
-@route(constants.PREFIX + '/channel')
+@route(PREFIX + '/channel')
 def HandleChannel(id, name, page=1, **params):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -102,7 +101,7 @@ def HandleChannel(id, name, page=1, **params):
 
     return oc
 
-@route(constants.PREFIX + '/genre')
+@route(PREFIX + '/genre')
 def HandleGenre(id, name, page=1, **params):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -115,7 +114,7 @@ def HandleGenre(id, name, page=1, **params):
 
     return oc
 
-@route(constants.PREFIX + '/blockbusters')
+@route(PREFIX + '/blockbusters')
 def GetBlockbusters(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Blockbusters')))
 
@@ -128,7 +127,7 @@ def GetBlockbusters(page=1, **params):
 
     return oc
 
-@route(constants.PREFIX + '/cool_movies')
+@route(PREFIX + '/cool_movies')
 def GetCoolMovies(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('Cool Movies')))
 
@@ -141,7 +140,7 @@ def GetCoolMovies(page=1, **params):
 
     return oc
 
-@route(constants.PREFIX + '/new_arrivals')
+@route(PREFIX + '/new_arrivals')
 def GetNewArrivals(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('New Arrivals')))
 
@@ -154,7 +153,7 @@ def GetNewArrivals(page=1, **params):
 
     return oc
 
-@route(constants.PREFIX + '/history')
+@route(PREFIX + '/history')
 def GetHistory(page=1, **params):
     oc = ObjectContainer(title2=unicode(L('History')))
 
@@ -206,7 +205,7 @@ def HandleMediaList(response, in_queue=False):
 
     return list
 
-@route(constants.PREFIX + '/children')
+@route(PREFIX + '/children')
 def HandleChildren(id, name, thumb, operation=None, in_queue=False, page=1, dir='desc'):
     oc = ObjectContainer(title2=unicode(name))
 
@@ -228,7 +227,7 @@ def HandleChildren(id, name, thumb, operation=None, in_queue=False, page=1, dir=
 
     return oc
 
-@route(constants.PREFIX + '/child', container=bool)
+@route(PREFIX + '/child', container=bool)
 def HandleChild(id, name, thumb, rating_key, description, duration, year, on_air, index,
                 files, operation=None, container=False):
     oc = ObjectContainer(title2=unicode(name))
@@ -343,7 +342,7 @@ def MediaObjectsForURL(files, media_id):
     return items
 
 @indirect
-@route(constants.PREFIX + '/play_video_wrapper')
+@route(PREFIX + '/play_video_wrapper')
 def PlayVideoWrapper(media_id, bitrate, format):
     response = service.get_url(media_id=media_id, format=format, bitrate=bitrate, other_server=util.other_server())
 
@@ -352,7 +351,7 @@ def PlayVideoWrapper(media_id, bitrate, format):
     return PlayVideo(response['url'], play_list=False, live=False)
 
 @indirect
-@route(constants.PREFIX + '/play_video')
+@route(PREFIX + '/play_video')
 def PlayVideo(url, live=True, play_list=True):
     if not url:
         return util.no_contents()
@@ -367,6 +366,6 @@ def PlayVideo(url, live=True, play_list=True):
 
         return IndirectResponse(MovieObject, key)
 
-@route(constants.PREFIX + '/play_list.m3u8')
+@route(PREFIX + '/play_list.m3u8')
 def PlayList(url):
     return service.get_play_list(url)
