@@ -1,7 +1,7 @@
 RAW_HLS_CLIENTS = ['Android', 'iOS', 'Roku', 'Safari', 'tvOS']
 
-def get_language():
-    return Prefs['language'].split('/')[1]
+# def get_language():
+#     return Prefs['language'].split('/')[1]
 
 def other_server():
     return int(Prefs['other_server'] == 'Yes')
@@ -36,18 +36,18 @@ def get_quality_level():
     else:
         return None
 
-def validate_prefs():
-    language = get_language()
+# def validate_prefs():
+#     language = get_language()
+#
+#     if Core.storage.file_exists(Core.storage.abs_path(
+#         Core.storage.join_path(Core.bundle_path, 'Contents', 'Strings', '%s.json' % language)
+#     )):
+#         Locale.DefaultLocale = language
+#     else:
+#         Locale.DefaultLocale = 'en-us'
 
-    if Core.storage.file_exists(Core.storage.abs_path(
-        Core.storage.join_path(Core.bundle_path, 'Contents', 'Strings', '%s.json' % language)
-    )):
-        Locale.DefaultLocale = language
-    else:
-        Locale.DefaultLocale = 'en-us'
-
-def no_contents(name=None):
-    if not name:
-        name = 'Error'
-
-    return ObjectContainer(header=unicode(L(name)), message=unicode(L('No entries found')))
+# def no_contents(name=None):
+#     if not name:
+#         name = 'Error'
+#
+#     return ObjectContainer(header=unicode(L(name)), message=unicode(L('No entries found')))

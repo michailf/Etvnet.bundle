@@ -2,6 +2,7 @@ import json
 import urllib
 
 import util
+import plex_util
 import pagination
 import bookmarks
 
@@ -42,7 +43,7 @@ def SearchMovies(query=None, page=1, **params):
     pagination.append_controls(oc, response['data'], page=page, callback=SearchMovies, query=query, params=params)
 
     if len(oc) < 1:
-        return util.no_contents('Movies Search')
+        return plex_util.no_contents('Movies Search')
 
     return oc
 
@@ -354,7 +355,7 @@ def PlayVideoWrapper(media_id, bitrate, format):
 @route(PREFIX + '/play_video')
 def PlayVideo(url, live=True, play_list=True):
     if not url:
-        return util.no_contents()
+        return plex_util.no_contents()
     else:
         if str(play_list) == 'True':
             url = Callback(PlayList, url=url)

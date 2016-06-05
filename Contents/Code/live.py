@@ -3,6 +3,7 @@ import datetime
 import urllib
 
 import util
+import plex_util
 import pagination
 import archive
 
@@ -297,7 +298,7 @@ def PlayVideoLive(url, live=True, play_list=True):
     Log(play_list)
 
     if not url:
-        return util.no_contents()
+        return plex_util.no_contents()
     else:
         if str(play_list) == 'True':
             url = Callback(PlayListLive, url=url)
