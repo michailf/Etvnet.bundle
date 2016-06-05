@@ -40,8 +40,9 @@ Logs are located here:
 
 OSX:
 ~/Library/Logs/Plex\ Media\ Server/PMS\ Plugin\ Logs/com.plexapp.plugins.etvnet.log
-~/Library/Logs/Plex\ Media\ Server.log
 ~/Library/Logs/Plex\ Media\ Server/PMS\ Plugin\ Logs/com.plexapp.system.log
+~/Library/Logs/Plex\ Media\ Server/Plex\ Media\ Server.log
+
 
 # Installing core tools
 
