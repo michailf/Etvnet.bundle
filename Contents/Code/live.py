@@ -256,10 +256,12 @@ def MediaObjectsForURL(files, channel_id, offset):
     bitrates = service.bitrates(files, accepted_format=format, quality_level=quality_level)
 
     config = {
-        "video_codec": VideoCodec.H264,
-        "protocol": Protocol.HLS,
-        "container": Container.MPEGTS,
+        # "video_codec": VideoCodec.H264,
+        # "protocol": Protocol.HLS,
+        # "container": Container.MPEGTS,
     }
+
+    # config = builder.get_plex_config("mp4")
 
     media_objects = []
 
