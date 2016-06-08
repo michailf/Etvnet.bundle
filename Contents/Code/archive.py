@@ -314,7 +314,7 @@ def MediaObjectsForURL(files, media_id):
     if format not in all_bitrates:
         format = 'wmv' if format == 'mp4' else 'mp4'
 
-    config = builder.get_plex_config(format)
+    metadata = builder.get_metadata(format)
 
     for fm, bitrates in service.bitrates(files, format, quality_level).iteritems():
         media_objects = []
@@ -324,17 +324,17 @@ def MediaObjectsForURL(files, media_id):
 
             play_callback = Callback(PlayVideoWrapper, media_id=media_id, bitrate=bitrate, format=str(format))
 
-            # config = {
-            #     "video_codec": plex_config[''],
+            # metadata = {
+            #     "video_codec": metadata[''],
             #     # "video_codec" : VideoCodec.H264,
             #     # "protocol": Protocol.HLS,
             #     # "container": Container.MPEGTS,
             #     # "video_resolution": bitrate
             # }
 
-            config["video_resolution"] = bitrate
+            metadata["video_resolution"] = bitrate
 
-            media_object = builder.build_media_object(play_callback, config)
+            media_object = builder.build_media_object(play_callback, metadata)
 
             media_objects.append(media_object)
 

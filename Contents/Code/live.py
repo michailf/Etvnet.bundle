@@ -256,13 +256,13 @@ def MediaObjectsForURL(files, channel_id, offset):
     files = json.loads(urllib.unquote_plus(files))
     bitrates = service.bitrates(files, accepted_format=format, quality_level=quality_level)
 
-    config = {
+    metadata = {
         # "video_codec": VideoCodec.H264,
         # "protocol": Protocol.HLS,
         # "container": Container.MPEGTS,
     }
 
-    # config = builder.get_plex_config("mp4")
+    # metadata = builder.metadata("mp4")
 
     media_objects = []
 
@@ -272,9 +272,9 @@ def MediaObjectsForURL(files, channel_id, offset):
         play_callback = Callback(PlayVideoWrapperLive, channel_id=channel_id, bitrate=bitrate, format=format,
                                  offset=offset, live=True)
 
-        config["video_resolution"] = bitrate
+        metadata["video_resolution"] = bitrate
 
-        media_object = builder.build_media_object(play_callback, config)
+        media_object = builder.build_media_object(play_callback, metadata)
 
         media_objects.append(media_object)
 
