@@ -286,7 +286,7 @@ def PlayVideoWrapperLive(channel_id, bitrate, format, offset, live):
 
     Log(response['url'])
 
-    return PlayVideoLive(response['url'], play_list=True, live=True)
+    return PlayVideoLive(response['url'], play_list=False, live=True)
 
 @indirect
 @route(PREFIX + '/play_video_live')
