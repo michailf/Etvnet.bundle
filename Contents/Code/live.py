@@ -257,18 +257,14 @@ def MediaObjectsForURL(files, channel_id, offset):
     bitrates = service.bitrates(files, accepted_format=format, quality_level=quality_level)
 
     metadata = {
-        # "video_codec": VideoCodec.H264,
-        # "protocol": Protocol.HLS,
-        # "container": Container.MPEGTS,
+        "video_codec": VideoCodec.H264,
+        "protocol": Protocol.HLS,
+        "container": Container.MPEGTS,
     }
-
-    # metadata = builder.metadata("mp4")
 
     media_objects = []
 
     for bitrate in sorted(bitrates[format], reverse=True):
-        #video_resolution = service.bitrate_to_resolution(bitrate)[0]
-
         play_callback = Callback(PlayVideoWrapperLive, channel_id=channel_id, bitrate=bitrate, format=format,
                                  offset=offset, live=True)
 
