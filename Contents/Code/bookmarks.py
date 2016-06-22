@@ -1,5 +1,3 @@
-import archive
-
 def append_controls(oc, handler, **params):
     bookmark = service.get_bookmark(params['id'])
 
@@ -17,14 +15,3 @@ def append_controls(oc, handler, **params):
                 title=unicode(L('Add Bookmark')),
                 thumb=R(ADD_ICON)
         ))
-
-@route(PREFIX + '/bookmarks')
-def GetBookmarks():
-    oc = ObjectContainer(title2=unicode(L('Bookmarks')))
-
-    response = service.get_bookmarks()
-
-    for media in archive.HandleMediaList(response['data']['bookmarks']):
-        oc.add(media)
-
-    return oc
