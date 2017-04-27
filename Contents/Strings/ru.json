@@ -6,7 +6,7 @@
   "Cool Movies": "Интересное Кино",
   "New Arrivals": "Новое",
   "Topics": "Темы",
-  "Bookmarks": "Очередь",
+  "Bookmarks": "Избранное",
   "Radio": "Радио",
   "System": "Система",
   "Search on Etvnet": "Искать на Etvnet",
@@ -22,8 +22,8 @@
 
   // archive
   "Channels": "Каналы",
-  "Add Bookmark": "Добавить в очередь",
-  "Remove Bookmark": "Удалить из очереди",
+  "Add Bookmark": "Добавить в избранное",
+  "Remove Bookmark": "Удалить из избранного",
   "Sort Items": "Сортировать",
   "Movies Search": "Поиск по Фильмам",
 
