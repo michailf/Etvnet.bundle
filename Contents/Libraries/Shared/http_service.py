@@ -1,7 +1,6 @@
 import sys
 import urllib
 import json
-import ssl
 from lxml import html
 
 try:
@@ -34,7 +33,11 @@ class HttpService():
             for key, value in headers.items():
                 request.add_header(key, value)
 
-        context = ssl._create_unverified_context()
+        try:
+            import ssl
+            context = ssl._create_unverified_context()
+        except AttributeError:
+            context = None
         return urlopen(request, context=context)
 
     def get_content(self, response):
